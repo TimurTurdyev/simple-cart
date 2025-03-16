@@ -27,6 +27,9 @@
             "TimurTurdyev\\Cart\\Tests\\": "tests/"
         }
     },
+    "suggest": {
+        "illuminate/database": "Required for the database storage driver"
+    },
     "extra": {
         "laravel": {
             "providers": [
