@@ -1,0 +1,63 @@
+<?php
+
+declare(strict_types=1);
+
+namespace TimurTurdyev\Cart\Tests;
+
+use Illuminate\Support\Facades\Event;
+use TimurTurdyev\Cart\CartManager;
+use TimurTurdyev\Cart\Events\LineAdded;
+use TimurTurdyev\Cart\Events\LineRemoved;
+use TimurTurdyev\Cart\Events\LineUpdated;
+use TimurTurdyev\Cart\Events\ListCleared;
+use TimurTurdyev\Cart\Tests\Fixtures\FakeProduct;
+
+final class CartEventsTest extends TestCase
+{
+    protected function defineEnvironment($app): void
+    {
+        $app['config']->set('session.driver', 'array');
+    }
+
+    public function test_lifecycle_events(): void
+    {
+        Event::fake();
+
+        $cart = $this->app->make(CartManager::class)->list('cart');
+        $product = new FakeProduct();
+
+        $line = $cart->add($product);
+        $cart->setQuantity($line->id, 3);
+        $cart->remove($line->id);
+        $cart->clear();
+
+        Event::assertDispatched(LineAdded::class, fn (LineAdded $e): bool => $e->list === 'cart');
+        Event::assertDispatched(LineUpdated::class, fn (LineUpdated $e): bool => $e->line->quantity === 3);
+        Event::assertDispatched(LineRemoved::class);
+        Event::assertDispatched(ListCleared::class);
+    }
+
+    public function test_quantity_drop_to_zero_dispatches_removed(): void
+    {
+        Event::fake();
+
+        $cart = $this->app->make(CartManager::class)->list('cart');
+        $line = $cart->add(new FakeProduct());
+
+        $cart->setQuantity($line->id, 0);
+
+        Event::assertDispatched(LineRemoved::class);
+        Event::assertNotDispatched(LineUpdated::class);
+    }
+
+    public function test_events_can_be_disabled(): void
+    {
+        config()->set('cart.events', false);
+        Event::fake();
+
+        $this->app->forgetInstance(CartManager::class);
+        $this->app->make(CartManager::class)->list('cart')->add(new FakeProduct());
+
+        Event::assertNotDispatched(LineAdded::class);
+    }
+}
