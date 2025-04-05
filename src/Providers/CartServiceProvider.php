@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace TimurTurdyev\Cart\Providers;
 
+use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use TimurTurdyev\Cart\CartManager;
 use TimurTurdyev\Cart\Contracts\Storage;
+use TimurTurdyev\Cart\Listeners\MergeGuestCart;
 use TimurTurdyev\Cart\ManagedList;
 use TimurTurdyev\Cart\Storage\StorageManager;
 
@@ -43,5 +45,13 @@ final class CartServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../../config/cart.php' => config_path('cart.php'),
         ], 'cart-config');
+
+        $this->publishes([
+            __DIR__.'/../../database/migrations' => database_path('migrations'),
+        ], 'cart-migrations');
+
+        if ($this->app->make('config')->get('cart.merge.enabled')) {
+            $this->app->make('events')->listen(Login::class, MergeGuestCart::class);
+        }
     }
 }
