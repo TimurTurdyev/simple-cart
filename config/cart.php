@@ -16,6 +16,19 @@ return [
         'compare' => ['policy' => 'toggle', 'limit' => 4],
     ],
 
+    // Database driver settings.
+    'database' => [
+        'table' => 'cart_lists',
+        'connection' => null,
+    ],
+
+    // Merge the guest cart into the user cart on login (database driver only).
+    // strategy: sum (quantities add up), keep (user lines win) or replace (guest wins).
+    'merge' => [
+        'enabled' => true,
+        'strategy' => 'sum',
+    ],
+
     // Dispatch lifecycle events (LineAdded, LineRemoved, ...).
     'events' => true,
 
