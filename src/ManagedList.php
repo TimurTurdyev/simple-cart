@@ -35,9 +35,9 @@ final class ManagedList
         return $this->name;
     }
 
-    public function add(Purchasable|Line $item, int $quantity = 1, array $options = []): Line
+    public function add(Purchasable|Line $item, int $quantity = 1, array $options = [], array $meta = []): Line
     {
-        $line = $this->line($item, $quantity, $options);
+        $line = $this->line($item, $quantity, $options, $meta);
 
         $this->mutate($this->state()->add($line));
 
@@ -200,9 +200,9 @@ final class ManagedList
         $this->storage->write($this->name, $empty ? [] : $state->toArray());
     }
 
-    private function line(Purchasable|Line $item, int $quantity, array $options): Line
+    private function line(Purchasable|Line $item, int $quantity, array $options, array $meta = []): Line
     {
-        return $item instanceof Line ? $item : Line::for($item, $quantity, $options);
+        return $item instanceof Line ? $item : Line::for($item, $quantity, $options, $meta);
     }
 
     private function idOf(Purchasable|Line|string $item, array $options): string

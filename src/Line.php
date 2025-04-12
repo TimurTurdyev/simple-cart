@@ -18,6 +18,7 @@ final readonly class Line
         public Price $price,
         public int $quantity,
         public array $options,
+        public array $meta = [],
     ) {
         if (trim($this->name) === '') {
             throw InvalidLineException::emptyName();
@@ -35,6 +36,7 @@ final readonly class Line
         int $quantity = 1,
         array $options = [],
         ?string $purchasableType = null,
+        array $meta = [],
     ): self {
         return new self(
             id: self::identity($purchasableId, $options, $purchasableType),
@@ -44,10 +46,11 @@ final readonly class Line
             price: $price,
             quantity: $quantity,
             options: $options,
+            meta: $meta,
         );
     }
 
-    public static function for(Purchasable $item, int $quantity = 1, array $options = []): self
+    public static function for(Purchasable $item, int $quantity = 1, array $options = [], array $meta = []): self
     {
         return self::of(
             purchasableId: $item->cartId(),
@@ -56,6 +59,7 @@ final readonly class Line
             quantity: $quantity,
             options: $options,
             purchasableType: $item::class,
+            meta: $meta,
         );
     }
 
@@ -76,6 +80,7 @@ final readonly class Line
             $this->price,
             $quantity,
             $this->options,
+            $this->meta,
         );
     }
 
@@ -94,6 +99,20 @@ final readonly class Line
         return $this->options[$key] ?? $default;
     }
 
+    public function meta(string $key, mixed $default = null): mixed
+    {
+        return $this->meta[$key] ?? $default;
+    }
+
+    public function model(): ?object
+    {
+        if ($this->purchasableType === null || ! class_exists($this->purchasableType)) {
+            return null;
+        }
+
+        return $this->purchasableType::query()->find($this->purchasableId);
+    }
+
     public function toArray(): array
     {
         return [
@@ -104,6 +123,7 @@ final readonly class Line
             'price' => $this->price->minor(),
             'quantity' => $this->quantity,
             'options' => $this->options,
+            'meta' => $this->meta,
         ];
     }
 
@@ -117,6 +137,7 @@ final readonly class Line
             price: Price::fromMinor($data['price']),
             quantity: $data['quantity'],
             options: $data['options'] ?? [],
+            meta: $data['meta'] ?? [],
         );
     }
 
