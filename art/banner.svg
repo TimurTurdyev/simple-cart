@@ -67,7 +67,7 @@
     <text x="856" y="254" fill="#e2e8f0">PHP 8.3+</text>
 
     <rect x="978" y="226" width="142" height="44" rx="22" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18"/>
-    <text x="998" y="254" fill="#e2e8f0">Laravel 12</text>
+    <text x="994" y="254" fill="#e2e8f0">Laravel 12+</text>
   </g>
 
   <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17">
