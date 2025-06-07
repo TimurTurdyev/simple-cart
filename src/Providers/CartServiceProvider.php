@@ -8,8 +8,9 @@ use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use TimurTurdyev\Cart\CartManager;
-use TimurTurdyev\Cart\Console\ImportLegacyCommand;
+use TimurTurdyev\Cart\Contracts\CartIdentity;
 use TimurTurdyev\Cart\Contracts\Storage;
+use TimurTurdyev\Cart\Identity\IdentityManager;
 use TimurTurdyev\Cart\Listeners\MergeGuestCart;
 use TimurTurdyev\Cart\ManagedList;
 use TimurTurdyev\Cart\Storage\StorageManager;
@@ -19,6 +20,13 @@ final class CartServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/cart.php', 'cart');
+
+        $this->app->singleton(IdentityManager::class);
+
+        $this->app->bind(
+            CartIdentity::class,
+            fn (Application $app): CartIdentity => $app->make(IdentityManager::class)->driver(),
+        );
 
         $this->app->singleton(StorageManager::class);
 
@@ -53,10 +61,6 @@ final class CartServiceProvider extends ServiceProvider
 
         if ($this->app->make('config')->get('cart.merge.enabled')) {
             $this->app->make('events')->listen(Login::class, MergeGuestCart::class);
-        }
-
-        if ($this->app->runningInConsole()) {
-            $this->commands([ImportLegacyCommand::class]);
         }
     }
 }

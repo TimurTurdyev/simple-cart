@@ -6,17 +6,17 @@ namespace TimurTurdyev\Cart\Listeners;
 
 use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Config\Repository;
-use Illuminate\Contracts\Session\Session;
+use TimurTurdyev\Cart\Contracts\SupportsOwnerMerge;
+use TimurTurdyev\Cart\Identity\IdentityManager;
 use TimurTurdyev\Cart\ListPolicy;
 use TimurTurdyev\Cart\MergeStrategy;
-use TimurTurdyev\Cart\Storage\DatabaseStorage;
 use TimurTurdyev\Cart\Storage\StorageManager;
 
 final readonly class MergeGuestCart
 {
     public function __construct(
         private StorageManager $storage,
-        private Session $session,
+        private IdentityManager $identity,
         private Repository $config,
     ) {
     }
@@ -25,7 +25,7 @@ final readonly class MergeGuestCart
     {
         $driver = $this->storage->driver();
 
-        if (! $driver instanceof DatabaseStorage) {
+        if (! $driver instanceof SupportsOwnerMerge) {
             return;
         }
 
@@ -35,7 +35,7 @@ final readonly class MergeGuestCart
         );
 
         $driver->mergeOwners(
-            from: $this->session->getId(),
+            from: $this->identity->driver()->id(),
             to: (string) $event->user->getAuthIdentifier(),
             strategy: MergeStrategy::from($this->config->get('cart.merge.strategy', 'sum')),
             policies: $policies,

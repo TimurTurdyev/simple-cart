@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TimurTurdyev\Cart\Tests\Storage;
 
 use TimurTurdyev\Cart\Cart;
+use TimurTurdyev\Cart\Contracts\CartIdentity;
 use TimurTurdyev\Cart\Line;
 use TimurTurdyev\Cart\ListPolicy;
 use TimurTurdyev\Cart\MergeStrategy;
@@ -75,6 +76,20 @@ final class DatabaseStorageTest extends TestCase
 
     private function storage(string $owner): DatabaseStorage
     {
-        return new DatabaseStorage(fn (): string => $owner);
+        return new DatabaseStorage(new class($owner) implements CartIdentity
+        {
+            public function __construct(private readonly string $owner)
+            {
+            }
+
+            public function id(): string
+            {
+                return $this->owner;
+            }
+
+            public function persist(): void
+            {
+            }
+        });
     }
 }

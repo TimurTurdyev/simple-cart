@@ -4,23 +4,31 @@ declare(strict_types=1);
 
 namespace TimurTurdyev\Cart\Storage;
 
-use Closure;
 use TimurTurdyev\Cart\Cart;
+use TimurTurdyev\Cart\Contracts\CartIdentity;
 use TimurTurdyev\Cart\Contracts\Storage;
+use TimurTurdyev\Cart\Contracts\SupportsOwnerMerge;
+use TimurTurdyev\Cart\Contracts\SupportsOwnerScope;
+use TimurTurdyev\Cart\Identity\FixedIdentity;
 use TimurTurdyev\Cart\ListPolicy;
 use TimurTurdyev\Cart\MergeStrategy;
 
-final readonly class DatabaseStorage implements Storage
+final readonly class DatabaseStorage implements Storage, SupportsOwnerMerge, SupportsOwnerScope
 {
     public function __construct(
-        private Closure $owner,
+        private CartIdentity $identity,
     ) {
+    }
+
+    public function forOwner(string $owner): Storage
+    {
+        return new self(new FixedIdentity($owner));
     }
 
     public function read(string $list): array
     {
         $payload = CartRecord::query()
-            ->where('owner', $this->ownerId())
+            ->where('owner', $this->identity->id())
             ->where('list', $list)
             ->value('payload');
 
@@ -35,8 +43,10 @@ final readonly class DatabaseStorage implements Storage
             return;
         }
 
+        $this->identity->persist();
+
         CartRecord::query()->updateOrCreate(
-            ['owner' => $this->ownerId(), 'list' => $list],
+            ['owner' => $this->identity->id(), 'list' => $list],
             ['payload' => $payload],
         );
     }
@@ -44,7 +54,7 @@ final readonly class DatabaseStorage implements Storage
     public function forget(string $list): void
     {
         CartRecord::query()
-            ->where('owner', $this->ownerId())
+            ->where('owner', $this->identity->id())
             ->where('list', $list)
             ->delete();
     }
@@ -78,10 +88,5 @@ final readonly class DatabaseStorage implements Storage
         }
 
         CartRecord::query()->where('owner', $from)->delete();
-    }
-
-    private function ownerId(): string
-    {
-        return ($this->owner)();
     }
 }
