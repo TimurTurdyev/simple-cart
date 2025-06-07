@@ -12,6 +12,7 @@
     ],
     "require": {
         "php": "^8.3",
+        "illuminate/auth": "^12.0",
         "illuminate/support": "^12.0"
     },
     "require-dev": {
@@ -29,6 +30,11 @@
     },
     "suggest": {
         "illuminate/database": "Required for the database storage driver"
+    },
+    "config": {
+        "platform": {
+            "php": "8.3.0"
+        }
     },
     "extra": {
         "laravel": {
