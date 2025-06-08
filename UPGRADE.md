@@ -1,4 +1,12 @@
-# Upgrading from darryldecode/laravelshoppingcart
+# Upgrade Guide
+
+## From 1.0 to 1.1
+
+- `Storage\DatabaseStorage` is now constructed with a `Contracts\CartIdentity` instead of an owner `Closure`. The driver is wired by `StorageManager`, so this only affects code instantiating `DatabaseStorage` directly - wrap your owner resolution into a `CartIdentity` (see `Identity\FixedIdentity`).
+- The `cart:import-legacy` command and the public `Legacy\LegacyImporter` class are removed. Data migration is an application-side one-off script now: build the new payload and write it for an explicit owner via `forOwner()` (see [Data migration](#data-migration) below).
+- New config sections `identity` and `cache` ship with backwards-compatible defaults (`identity.driver=session`, `cache.enabled=false`); published configs keep working without changes.
+
+## From darryldecode/laravelshoppingcart
 
 This package is a clean rewrite, not a drop-in replacement. The ideas differ in three places:
 
@@ -6,7 +14,7 @@ This package is a clean rewrite, not a drop-in replacement. The ideas differ in 
 - **Money.** Amounts are integer minor units inside the `Price` value object; floats never leak into the math.
 - **Adjusters instead of conditions.** String values like `'-10%'` are gone. Discounts, fees and shipping are typed classes applied as a pipeline.
 
-## API mapping
+### API mapping
 
 | darryldecode | laravel-cart |
 |---|---|
@@ -32,7 +40,7 @@ This package is a clean rewrite, not a drop-in replacement. The ideas differ in 
 | `$item->getPriceSum()` | `$line->subtotal()->minor()` |
 | custom storage (`get`/`has`/`put`) | implement `Contracts\Storage` (`read`/`write`/`forget`), register via `StorageManager::extend()` |
 
-## Condition value mapping
+### Condition value mapping
 
 | Legacy value | Adjuster |
 |---|---|
@@ -43,15 +51,19 @@ This package is a clean rewrite, not a drop-in replacement. The ideas differ in 
 
 Item-level conditions have no direct counterpart: apply variant pricing to the line price before adding it.
 
-## Data migration
+### Data migration
 
-Convert stored darryldecode carts into the `cart_lists` format:
+The package ships no importer. Convert stored darryldecode carts with a one-off script on the application side:
 
-```bash
-php artisan cart:import-legacy legacy_carts \
-    --owner-column=identifier \
-    --data-column=cart_data \
-    --dry-run
+1. Read the legacy rows (session dump, database table or cache entries).
+2. Map every item to a line array: float prices become integer minor units (`Price::fromDecimal(...)`), `attributes` become `options`, `associatedModel` becomes the purchasable type. `Line::of(...)->toArray()` produces the stored shape.
+3. Convert conditions using the table above; each adjuster is stored as `['class' => ..., 'data' => $adjuster->toArray()]`.
+4. Write the payload for the original owner id so live cookies keep finding their carts:
+
+```php
+use TimurTurdyev\Cart\Storage\StorageManager;
+
+app(StorageManager::class)->driver('database')
+    ->forOwner($ownerId)
+    ->write('cart', ['lines' => $lines, 'adjusters' => $adjusters]);
 ```
-
-Drop `--dry-run` once the report looks right. The command accepts json payloads (and safely falls back to class-free unserialize), maps float prices to minor units and converts conditions using the table above. For custom storages, `TimurTurdyev\Cart\Legacy\LegacyImporter` is a public class - feed it the legacy arrays and write the resulting payload wherever you need.
