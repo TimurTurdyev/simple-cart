@@ -189,7 +189,7 @@ php artisan vendor:publish --tag=cart-migrations
 php artisan migrate
 ```
 
-При логине гостевая корзина сливается с корзиной пользователя. Стратегии: `sum` (количества складываются), `keep` (строки пользователя важнее), `replace` (гостевая заменяет).
+При логине гостевая корзина сливается с корзиной пользователя. Стратегии: `sum` (количества складываются), `keep` (строки пользователя важнее), `replace` (гостевая заменяет). Сливать умеют драйверы с `SupportsOwnerMerge` (database умеет из коробки), с остальными листенер просто пропускает логин.
 
 Свой драйвер подключается снаружи, без правки пакета:
 
@@ -205,11 +205,7 @@ app(StorageManager::class)->extend('redis', fn () => new RedisCartStorage());
 
 ## Переход с darryldecode/laravelshoppingcart
 
-Таблица соответствия API - в [UPGRADE.md](UPGRADE.md). Сохраненные корзины конвертируются командой:
-
-```bash
-php artisan cart:import-legacy legacy_carts --owner-column=identifier --data-column=cart_data
-```
+Таблица соответствия API и рецепт переноса данных - в [UPGRADE.md](UPGRADE.md). Встроенного импорта нет: старые корзины переносит одноразовый скрипт приложения через `forOwner($ownerId)->write(...)`, id владельцев не меняются, живые cookie продолжают находить свои корзины.
 
 ## Тесты
 
