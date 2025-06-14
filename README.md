@@ -1,17 +1,17 @@
 <p align="center">
-  <img src="art/banner.svg" alt="Laravel Cart" width="900">
+  <img src="art/banner.svg" alt="Simple Cart" width="900">
 </p>
 
-# Laravel Cart
+# Simple Cart
 
-Корзина, закладки и сравнение товаров для Laravel 12+ (PHP 8.3+).
+Simple by design, not by capability. Корзина, закладки и сравнение товаров для Laravel 12+ (PHP 8.3+).
 
 Каждый список (корзина, закладки, сравнение, свои списки) - один и тот же примитив с политикой из конфига. Деньги считает только корзина, и делает это через конвейер классов-корректировок. Без магических строк, без float, без обязательных миграций.
 
 ## Установка
 
 ```bash
-composer require timurturdyev/laravel-cart
+composer require timurturdyev/simple-cart
 php artisan vendor:publish --tag=cart-config   # по желанию
 ```
 
@@ -20,9 +20,9 @@ php artisan vendor:publish --tag=cart-config   # по желанию
 ## Быстрый старт
 
 ```php
-use TimurTurdyev\Cart\Facades\Cart;
-use TimurTurdyev\Cart\Facades\Compare;
-use TimurTurdyev\Cart\Facades\Wishlist;
+use TimurTurdyev\SimpleCart\Facades\Cart;
+use TimurTurdyev\SimpleCart\Facades\Compare;
+use TimurTurdyev\SimpleCart\Facades\Wishlist;
 
 $line = Cart::add($item, quantity: 2, options: ['size' => 'm']);
 
@@ -39,8 +39,8 @@ Compare::add($item);          // лимит берется из конфига
 `$item` - любая модель, реализующая `Purchasable`:
 
 ```php
-use TimurTurdyev\Cart\Contracts\Purchasable;
-use TimurTurdyev\Cart\Support\Price;
+use TimurTurdyev\SimpleCart\Contracts\Purchasable;
+use TimurTurdyev\SimpleCart\Support\Price;
 
 class Chair extends Model implements Purchasable
 {
@@ -64,7 +64,7 @@ class Chair extends Model implements Purchasable
 Без модели строка собирается вручную:
 
 ```php
-use TimurTurdyev\Cart\Line;
+use TimurTurdyev\SimpleCart\Line;
 
 Cart::add(Line::of(11, 'Chair', Price::fromDecimal('19.99'), quantity: 2));
 ```
@@ -104,8 +104,8 @@ Cart::total()->format();       // "19.99"
 ## Скидки, сборы, доставка
 
 ```php
-use TimurTurdyev\Cart\Adjusters\PercentageDiscount;
-use TimurTurdyev\Cart\Adjusters\Shipping;
+use TimurTurdyev\SimpleCart\Adjusters\PercentageDiscount;
+use TimurTurdyev\SimpleCart\Adjusters\Shipping;
 
 Cart::adjust(
     new PercentageDiscount('summer', percent: 10),
@@ -119,8 +119,8 @@ Cart::totals()->breakdown();    // subtotal, каждая корректиров
 В комплекте: `PercentageDiscount`, `FixedDiscount`, `PercentageFee`, `Shipping`. Корректировки применяются конвейером: каждая видит текущий total, поэтому последовательные скидки компаундятся и порядок важен. Своя корректировка - один класс:
 
 ```php
-use TimurTurdyev\Cart\Contracts\Adjuster;
-use TimurTurdyev\Cart\Support\Totals;
+use TimurTurdyev\SimpleCart\Contracts\Adjuster;
+use TimurTurdyev\SimpleCart\Support\Totals;
 
 final readonly class GiftWrap implements Adjuster
 {
@@ -168,7 +168,7 @@ final readonly class GiftWrap implements Adjuster
 Новый тип списка - строка в конфиге, а не новый класс:
 
 ```php
-use TimurTurdyev\Cart\CartManager;
+use TimurTurdyev\SimpleCart\CartManager;
 
 app(CartManager::class)->list('viewed')->toggle($item);
 
@@ -194,7 +194,7 @@ php artisan migrate
 Свой драйвер подключается снаружи, без правки пакета:
 
 ```php
-use TimurTurdyev\Cart\Storage\StorageManager;
+use TimurTurdyev\SimpleCart\Storage\StorageManager;
 
 app(StorageManager::class)->extend('redis', fn () => new RedisCartStorage());
 ```
@@ -227,7 +227,7 @@ Cookie ставится лениво, при первой реальной за�
 
 Таблица `cart_lists` открыта для чтения: колонки `owner`, `list`, `payload` и таймстампы, формат меняет разве что мажорная версия.
 
-Брошенные корзины админка находит SQL-запросом по `updated_at`. Внутрь payload пускают json-функции БД и модель `TimurTurdyev\Cart\Storage\CartRecord`. Цены в минорных единицах, курсов валют тут нет.
+Брошенные корзины админка находит SQL-запросом по `updated_at`. Внутрь payload пускают json-функции БД и модель `TimurTurdyev\SimpleCart\Storage\CartRecord`. Цены в минорных единицах, курсов валют тут нет.
 
 ## Переход с darryldecode/laravelshoppingcart
 
