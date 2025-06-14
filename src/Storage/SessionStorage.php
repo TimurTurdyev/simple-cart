@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Storage;
+namespace TimurTurdyev\SimpleCart\Storage;
 
 use Illuminate\Contracts\Session\Session;
-use TimurTurdyev\Cart\Contracts\Storage;
+use TimurTurdyev\SimpleCart\Contracts\Storage;
 
 final readonly class SessionStorage implements Storage
 {

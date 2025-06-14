@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Contracts;
+namespace TimurTurdyev\SimpleCart\Contracts;
 
-use TimurTurdyev\Cart\Support\Totals;
+use TimurTurdyev\SimpleCart\Support\Totals;
 
 interface Adjuster
 {

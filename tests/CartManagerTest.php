@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests;
+namespace TimurTurdyev\SimpleCart\Tests;
 
-use TimurTurdyev\Cart\CartManager;
-use TimurTurdyev\Cart\Exceptions\UnknownListException;
-use TimurTurdyev\Cart\Tests\Fixtures\FakeProduct;
+use TimurTurdyev\SimpleCart\CartManager;
+use TimurTurdyev\SimpleCart\Exceptions\UnknownListException;
+use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
 
 final class CartManagerTest extends TestCase
 {
@@ -54,7 +54,7 @@ final class CartManagerTest extends TestCase
         $first->list()->add(new FakeProduct(id: 1, price: 1000), quantity: 2);
 
         $second = new CartManager(
-            storage: $this->app->make(\TimurTurdyev\Cart\Contracts\Storage::class),
+            storage: $this->app->make(\TimurTurdyev\SimpleCart\Contracts\Storage::class),
             config: $this->app->make('config'),
         );
 

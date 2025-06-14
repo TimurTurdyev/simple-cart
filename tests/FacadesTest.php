@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests;
+namespace TimurTurdyev\SimpleCart\Tests;
 
-use TimurTurdyev\Cart\Exceptions\ListLimitException;
-use TimurTurdyev\Cart\Facades\Cart;
-use TimurTurdyev\Cart\Facades\Compare;
-use TimurTurdyev\Cart\Facades\Wishlist;
-use TimurTurdyev\Cart\Tests\Fixtures\FakeProduct;
+use TimurTurdyev\SimpleCart\Exceptions\ListLimitException;
+use TimurTurdyev\SimpleCart\Facades\Cart;
+use TimurTurdyev\SimpleCart\Facades\Compare;
+use TimurTurdyev\SimpleCart\Facades\Wishlist;
+use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
 
 final class FacadesTest extends TestCase
 {

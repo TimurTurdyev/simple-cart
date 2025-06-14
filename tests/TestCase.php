@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests;
+namespace TimurTurdyev\SimpleCart\Tests;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use TimurTurdyev\Cart\Providers\CartServiceProvider;
+use TimurTurdyev\SimpleCart\Providers\CartServiceProvider;
 
 abstract class TestCase extends BaseTestCase
 {

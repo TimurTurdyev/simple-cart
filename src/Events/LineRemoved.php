@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Events;
+namespace TimurTurdyev\SimpleCart\Events;
 
-use TimurTurdyev\Cart\Line;
+use TimurTurdyev\SimpleCart\Line;
 
 final readonly class LineRemoved
 {

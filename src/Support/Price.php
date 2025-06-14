@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Support;
+namespace TimurTurdyev\SimpleCart\Support;
 
-use TimurTurdyev\Cart\Exceptions\InvalidPriceException;
+use TimurTurdyev\SimpleCart\Exceptions\InvalidPriceException;
 
 final readonly class Price
 {

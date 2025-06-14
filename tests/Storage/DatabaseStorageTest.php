@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests\Storage;
+namespace TimurTurdyev\SimpleCart\Tests\Storage;
 
-use TimurTurdyev\Cart\Cart;
-use TimurTurdyev\Cart\Contracts\CartIdentity;
-use TimurTurdyev\Cart\Line;
-use TimurTurdyev\Cart\ListPolicy;
-use TimurTurdyev\Cart\MergeStrategy;
-use TimurTurdyev\Cart\Storage\CartRecord;
-use TimurTurdyev\Cart\Storage\DatabaseStorage;
-use TimurTurdyev\Cart\Support\Price;
-use TimurTurdyev\Cart\Tests\TestCase;
+use TimurTurdyev\SimpleCart\Cart;
+use TimurTurdyev\SimpleCart\Contracts\CartIdentity;
+use TimurTurdyev\SimpleCart\Line;
+use TimurTurdyev\SimpleCart\ListPolicy;
+use TimurTurdyev\SimpleCart\MergeStrategy;
+use TimurTurdyev\SimpleCart\Storage\CartRecord;
+use TimurTurdyev\SimpleCart\Storage\DatabaseStorage;
+use TimurTurdyev\SimpleCart\Support\Price;
+use TimurTurdyev\SimpleCart\Tests\TestCase;
 
 final class DatabaseStorageTest extends TestCase
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests;
+namespace TimurTurdyev\SimpleCart\Tests;
 
 final class CartServiceProviderTest extends TestCase
 {

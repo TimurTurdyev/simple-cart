@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests;
+namespace TimurTurdyev\SimpleCart\Tests;
 
 use PHPUnit\Framework\TestCase;
-use TimurTurdyev\Cart\Adjusters\PercentageDiscount;
-use TimurTurdyev\Cart\Cart;
-use TimurTurdyev\Cart\Line;
-use TimurTurdyev\Cart\MergeStrategy;
-use TimurTurdyev\Cart\Support\Price;
+use TimurTurdyev\SimpleCart\Adjusters\PercentageDiscount;
+use TimurTurdyev\SimpleCart\Cart;
+use TimurTurdyev\SimpleCart\Line;
+use TimurTurdyev\SimpleCart\MergeStrategy;
+use TimurTurdyev\SimpleCart\Support\Price;
 
 final class CartMergeTest extends TestCase
 {

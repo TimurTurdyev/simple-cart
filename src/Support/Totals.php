@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Support;
+namespace TimurTurdyev\SimpleCart\Support;
 
 final readonly class Totals
 {

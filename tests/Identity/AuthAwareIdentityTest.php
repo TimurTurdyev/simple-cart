@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests\Identity;
+namespace TimurTurdyev\SimpleCart\Tests\Identity;
 
-use TimurTurdyev\Cart\Contracts\CartIdentity;
-use TimurTurdyev\Cart\Identity\AuthAwareIdentity;
-use TimurTurdyev\Cart\Tests\TestCase;
+use TimurTurdyev\SimpleCart\Contracts\CartIdentity;
+use TimurTurdyev\SimpleCart\Identity\AuthAwareIdentity;
+use TimurTurdyev\SimpleCart\Tests\TestCase;
 
 final class AuthAwareIdentityTest extends TestCase
 {

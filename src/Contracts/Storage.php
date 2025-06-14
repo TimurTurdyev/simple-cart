@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Contracts;
+namespace TimurTurdyev\SimpleCart\Contracts;
 
 interface Storage
 {

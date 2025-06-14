@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests\Fixtures;
+namespace TimurTurdyev\SimpleCart\Tests\Fixtures;
 
-use TimurTurdyev\Cart\Contracts\Purchasable;
-use TimurTurdyev\Cart\Support\Price;
+use TimurTurdyev\SimpleCart\Contracts\Purchasable;
+use TimurTurdyev\SimpleCart\Support\Price;
 
 final readonly class FakeProduct implements Purchasable
 {

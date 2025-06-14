@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart;
+namespace TimurTurdyev\SimpleCart;
 
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Collection;
-use TimurTurdyev\Cart\Contracts\Adjuster;
-use TimurTurdyev\Cart\Contracts\Purchasable;
-use TimurTurdyev\Cart\Contracts\Storage;
-use TimurTurdyev\Cart\Events\LineAdded;
-use TimurTurdyev\Cart\Events\LineRemoved;
-use TimurTurdyev\Cart\Events\LineUpdated;
-use TimurTurdyev\Cart\Events\ListCleared;
-use TimurTurdyev\Cart\Exceptions\UnknownLineException;
-use TimurTurdyev\Cart\Support\Price;
-use TimurTurdyev\Cart\Support\Totals;
+use TimurTurdyev\SimpleCart\Contracts\Adjuster;
+use TimurTurdyev\SimpleCart\Contracts\Purchasable;
+use TimurTurdyev\SimpleCart\Contracts\Storage;
+use TimurTurdyev\SimpleCart\Events\LineAdded;
+use TimurTurdyev\SimpleCart\Events\LineRemoved;
+use TimurTurdyev\SimpleCart\Events\LineUpdated;
+use TimurTurdyev\SimpleCart\Events\ListCleared;
+use TimurTurdyev\SimpleCart\Exceptions\UnknownLineException;
+use TimurTurdyev\SimpleCart\Support\Price;
+use TimurTurdyev\SimpleCart\Support\Totals;
 
 final class ManagedList
 {

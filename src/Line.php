@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart;
+namespace TimurTurdyev\SimpleCart;
 
-use TimurTurdyev\Cart\Contracts\Purchasable;
-use TimurTurdyev\Cart\Exceptions\InvalidLineException;
-use TimurTurdyev\Cart\Support\Price;
+use TimurTurdyev\SimpleCart\Contracts\Purchasable;
+use TimurTurdyev\SimpleCart\Exceptions\InvalidLineException;
+use TimurTurdyev\SimpleCart\Support\Price;
 
 final readonly class Line
 {

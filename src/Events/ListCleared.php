@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Events;
+namespace TimurTurdyev\SimpleCart\Events;
 
 final readonly class ListCleared
 {

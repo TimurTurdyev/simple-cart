@@ -1,6 +1,6 @@
 {
-    "name": "timurturdyev/laravel-cart",
-    "description": "Shopping cart, wishlist and compare lists for Laravel",
+    "name": "timurturdyev/simple-cart",
+    "description": "A simple cart, wishlist and compare lists for Laravel - one core, zero migrations",
     "type": "library",
     "license": "MIT",
     "keywords": ["laravel", "cart", "shopping-cart", "wishlist", "compare"],
@@ -20,12 +20,12 @@
     },
     "autoload": {
         "psr-4": {
-            "TimurTurdyev\\Cart\\": "src/"
+            "TimurTurdyev\\SimpleCart\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "TimurTurdyev\\Cart\\Tests\\": "tests/"
+            "TimurTurdyev\\SimpleCart\\Tests\\": "tests/"
         }
     },
     "suggest": {
@@ -39,7 +39,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "TimurTurdyev\\Cart\\Providers\\CartServiceProvider"
+                "TimurTurdyev\\SimpleCart\\Providers\\CartServiceProvider"
             ]
         }
     },

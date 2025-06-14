@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart;
+namespace TimurTurdyev\SimpleCart;
 
 final readonly class ListPolicy
 {

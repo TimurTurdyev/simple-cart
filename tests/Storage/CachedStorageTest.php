@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests\Storage;
+namespace TimurTurdyev\SimpleCart\Tests\Storage;
 
-use TimurTurdyev\Cart\CartManager;
-use TimurTurdyev\Cart\Contracts\CartIdentity;
-use TimurTurdyev\Cart\Contracts\Storage;
-use TimurTurdyev\Cart\Identity\AuthAwareIdentity;
-use TimurTurdyev\Cart\Storage\CachedStorage;
-use TimurTurdyev\Cart\Storage\StorageManager;
-use TimurTurdyev\Cart\Tests\Fixtures\FakeProduct;
-use TimurTurdyev\Cart\Tests\TestCase;
+use TimurTurdyev\SimpleCart\CartManager;
+use TimurTurdyev\SimpleCart\Contracts\CartIdentity;
+use TimurTurdyev\SimpleCart\Contracts\Storage;
+use TimurTurdyev\SimpleCart\Identity\AuthAwareIdentity;
+use TimurTurdyev\SimpleCart\Storage\CachedStorage;
+use TimurTurdyev\SimpleCart\Storage\StorageManager;
+use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
+use TimurTurdyev\SimpleCart\Tests\TestCase;
 
 final class CachedStorageTest extends TestCase
 {

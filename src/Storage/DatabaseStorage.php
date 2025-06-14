@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Storage;
+namespace TimurTurdyev\SimpleCart\Storage;
 
-use TimurTurdyev\Cart\Cart;
-use TimurTurdyev\Cart\Contracts\CartIdentity;
-use TimurTurdyev\Cart\Contracts\Storage;
-use TimurTurdyev\Cart\Contracts\SupportsOwnerMerge;
-use TimurTurdyev\Cart\Contracts\SupportsOwnerScope;
-use TimurTurdyev\Cart\Identity\FixedIdentity;
-use TimurTurdyev\Cart\ListPolicy;
-use TimurTurdyev\Cart\MergeStrategy;
+use TimurTurdyev\SimpleCart\Cart;
+use TimurTurdyev\SimpleCart\Contracts\CartIdentity;
+use TimurTurdyev\SimpleCart\Contracts\Storage;
+use TimurTurdyev\SimpleCart\Contracts\SupportsOwnerMerge;
+use TimurTurdyev\SimpleCart\Contracts\SupportsOwnerScope;
+use TimurTurdyev\SimpleCart\Identity\FixedIdentity;
+use TimurTurdyev\SimpleCart\ListPolicy;
+use TimurTurdyev\SimpleCart\MergeStrategy;
 
 final readonly class DatabaseStorage implements Storage, SupportsOwnerMerge, SupportsOwnerScope
 {
