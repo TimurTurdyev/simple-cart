@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create(config('cart.database.table', 'cart_lists'), function (Blueprint $table): void {
+        Schema::create(config('simple_cart.database.table', 'simple_cart_lists'), function (Blueprint $table): void {
             $table->id();
             $table->string('owner');
             $table->string('list');
@@ -23,6 +23,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists(config('cart.database.table', 'cart_lists'));
+        Schema::dropIfExists(config('simple_cart.database.table', 'simple_cart_lists'));
     }
 };

@@ -47,7 +47,7 @@ final class SessionStorageTest extends TestCase
         $storage->write('cart', ['lines' => ['a']]);
         $storage->write('cart', []);
 
-        $this->assertFalse(session()->has('cart.cart'));
+        $this->assertFalse(session()->has('simple_cart.cart'));
     }
 
     public function test_forget_removes_record(): void
@@ -58,7 +58,7 @@ final class SessionStorageTest extends TestCase
         $storage->forget('cart');
 
         $this->assertSame([], $storage->read('cart'));
-        $this->assertFalse(session()->has('cart.cart'));
+        $this->assertFalse(session()->has('simple_cart.cart'));
     }
 
     private function storage(): SessionStorage

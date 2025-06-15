@@ -88,13 +88,13 @@ final class ManagedListTest extends TestCase
         $cart = $this->cart();
 
         $cart->isEmpty();
-        $this->assertFalse(session()->has('cart.cart'));
+        $this->assertFalse(session()->has('simple_cart.cart'));
 
         $line = $cart->add(new FakeProduct());
-        $this->assertTrue(session()->has('cart.cart'));
+        $this->assertTrue(session()->has('simple_cart.cart'));
 
         $cart->remove($line->id);
-        $this->assertFalse(session()->has('cart.cart'));
+        $this->assertFalse(session()->has('simple_cart.cart'));
     }
 
     public function test_clear_forgets_storage(): void
@@ -107,7 +107,7 @@ final class ManagedListTest extends TestCase
 
         $this->assertTrue($cart->isEmpty());
         $this->assertSame([], $cart->adjusters());
-        $this->assertFalse(session()->has('cart.cart'));
+        $this->assertFalse(session()->has('simple_cart.cart'));
     }
 
     public function test_move_to_cart_keeps_quantity(): void

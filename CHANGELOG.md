@@ -17,7 +17,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - The package is renamed from `timurturdyev/laravel-cart` to `timurturdyev/simple-cart`; the root namespace changes from `TimurTurdyev\Cart` to `TimurTurdyev\SimpleCart`. The old Packagist package is abandoned in favor of the new one.
 - `DatabaseStorage` is constructed with a `CartIdentity` instead of an owner `Closure` (affects direct instantiation only; `StorageManager` wiring is unchanged).
-- The `cart_lists` payload format is documented as a public contract: external applications may read the table directly, and the structure only changes in major versions.
+- The `simple_cart_lists` payload format is documented as a public contract: external applications may read the table directly, and the structure only changes in major versions.
 - `illuminate/auth` is declared as a direct dependency (the `Login` event was used undeclared before).
 - Composer platform is pinned to PHP 8.3 so dev dependencies always resolve against the minimum supported version.
 

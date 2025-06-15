@@ -52,7 +52,7 @@ final class CartEventsTest extends TestCase
 
     public function test_events_can_be_disabled(): void
     {
-        config()->set('cart.events', false);
+        config()->set('simple_cart.events', false);
         Event::fake();
 
         $this->app->forgetInstance(CartManager::class);

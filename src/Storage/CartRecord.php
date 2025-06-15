@@ -17,11 +17,11 @@ final class CartRecord extends Model
 
     public function getTable(): string
     {
-        return config('cart.database.table', 'cart_lists');
+        return config('simple_cart.database.table', 'simple_cart_lists');
     }
 
     public function getConnectionName(): ?string
     {
-        return config('cart.database.connection') ?? parent::getConnectionName();
+        return config('simple_cart.database.connection') ?? parent::getConnectionName();
     }
 }

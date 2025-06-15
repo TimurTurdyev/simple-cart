@@ -30,7 +30,7 @@ final class CartManager
 
     private function build(string $name): ManagedList
     {
-        $config = $this->config->get("cart.lists.{$name}");
+        $config = $this->config->get("simple_cart.lists.{$name}");
 
         if (! is_array($config)) {
             throw UnknownListException::forName($name);

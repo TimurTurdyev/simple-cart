@@ -15,7 +15,7 @@ return [
     'identity' => [
         'driver' => env('CART_IDENTITY', 'session'),
         'cookie' => [
-            'name' => env('CART_COOKIE', 'cart_id'),
+            'name' => env('SIMPLE_CART_COOKIE', 'simple_cart_id'),
             'ttl_minutes' => 60 * 24 * 30,
         ],
     ],
@@ -31,7 +31,7 @@ return [
 
     // Database driver settings.
     'database' => [
-        'table' => 'cart_lists',
+        'table' => 'simple_cart_lists',
         'connection' => null,
     ],
 
@@ -43,7 +43,7 @@ return [
         'enabled' => false,
         'store' => null,
         'ttl_minutes' => 60 * 24 * 30,
-        'prefix' => 'cart_',
+        'prefix' => 'simple_cart_',
     ],
 
     // Merge the guest cart into the user cart on login (database driver only).

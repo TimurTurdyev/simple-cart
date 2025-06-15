@@ -39,7 +39,7 @@ final class CartManagerTest extends TestCase
 
     public function test_custom_list_from_config(): void
     {
-        config()->set('cart.lists.viewed', ['policy' => 'toggle', 'limit' => 20]);
+        config()->set('simple_cart.lists.viewed', ['policy' => 'toggle', 'limit' => 20]);
 
         $list = $this->app->make(CartManager::class)->list('viewed');
 

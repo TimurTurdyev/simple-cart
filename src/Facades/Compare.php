@@ -14,6 +14,6 @@ final class Compare extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return 'cart.compare';
+        return 'simple_cart.compare';
     }
 }

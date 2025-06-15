@@ -80,7 +80,7 @@ final class CachedStorageTest extends TestCase
         $cached->write('cart', ['lines' => ['a']]);
         $cached->write('wishlist', ['lines' => ['b']]);
 
-        $entry = $this->app->make('cache')->store('array')->get('cart_owner-1');
+        $entry = $this->app->make('cache')->store('array')->get('simple_cart_owner-1');
 
         $this->assertSame(['lines' => ['a']], $entry['cart']);
         $this->assertSame(['lines' => ['b']], $entry['wishlist']);
@@ -108,14 +108,14 @@ final class CachedStorageTest extends TestCase
 
         $store = $this->app->make('cache')->store('array');
 
-        $this->assertSame(['lines' => ['guest']], $store->get('cart_guest-1')['cart']);
-        $this->assertSame([], $store->get('cart_42')['cart']);
+        $this->assertSame(['lines' => ['guest']], $store->get('simple_cart_guest-1')['cart']);
+        $this->assertSame([], $store->get('simple_cart_42')['cart']);
     }
 
     public function test_manager_wraps_custom_extend_driver(): void
     {
-        config()->set('cart.storage', 'custom');
-        config()->set('cart.cache', [
+        config()->set('simple_cart.storage', 'custom');
+        config()->set('simple_cart.cache', [
             'enabled' => true,
             'store' => 'array',
             'ttl_minutes' => 60,
@@ -144,8 +144,8 @@ final class CachedStorageTest extends TestCase
 
     public function test_warm_cache_read_makes_no_database_queries(): void
     {
-        config()->set('cart.storage', 'database');
-        config()->set('cart.cache.enabled', true);
+        config()->set('simple_cart.storage', 'database');
+        config()->set('simple_cart.cache.enabled', true);
 
         $this->writer()->list('cart')->add(new FakeProduct(price: 500));
 
@@ -158,8 +158,8 @@ final class CachedStorageTest extends TestCase
 
     public function test_uncached_database_read_makes_single_query_per_list(): void
     {
-        config()->set('cart.storage', 'database');
-        config()->set('cart.cache.enabled', false);
+        config()->set('simple_cart.storage', 'database');
+        config()->set('simple_cart.cache.enabled', false);
 
         $this->writer()->list('cart')->add(new FakeProduct(price: 500));
 
@@ -177,7 +177,7 @@ final class CachedStorageTest extends TestCase
             identity: is_string($identity) ? new FixedOwner($identity) : $identity,
             cache: $this->app->make('cache')->store('array'),
             ttlMinutes: 60,
-            prefix: 'cart_',
+            prefix: 'simple_cart_',
         );
     }
 

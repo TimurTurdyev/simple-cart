@@ -14,6 +14,6 @@ final class Wishlist extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return 'cart.wishlist';
+        return 'simple_cart.wishlist';
     }
 }
