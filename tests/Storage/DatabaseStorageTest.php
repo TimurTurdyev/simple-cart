@@ -74,6 +74,20 @@ final class DatabaseStorageTest extends TestCase
         $this->assertSame(0, CartRecord::query()->where('owner', 'guest-1')->count());
     }
 
+    public function test_merge_owners_keeps_lists_without_policy(): void
+    {
+        $policy = new ListPolicy();
+        $line = Line::of(1, 'Item', Price::fromMinor(100));
+
+        $this->storage('guest-1')->write('cart', Cart::make($policy)->add($line)->toArray());
+        $this->storage('guest-1')->write('legacy', Cart::make($policy)->add($line)->toArray());
+
+        $this->storage('42')->mergeOwners('guest-1', '42', MergeStrategy::Sum, ['cart' => $policy]);
+
+        $this->assertSame(1, CartRecord::query()->where('owner', '42')->count());
+        $this->assertSame(1, CartRecord::query()->where('owner', 'guest-1')->where('list', 'legacy')->count());
+    }
+
     private function storage(string $owner): DatabaseStorage
     {
         return new DatabaseStorage(new class($owner) implements CartIdentity

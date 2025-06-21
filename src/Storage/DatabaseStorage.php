@@ -32,7 +32,9 @@ final readonly class DatabaseStorage implements Storage, SupportsOwnerMerge, Sup
             ->where('list', $list)
             ->value('payload');
 
-        return is_string($payload) ? json_decode($payload, true) : ($payload ?? []);
+        $decoded = is_string($payload) ? json_decode($payload, true) : $payload;
+
+        return is_array($decoded) ? $decoded : [];
     }
 
     public function write(string $list, array $payload): void
@@ -64,29 +66,31 @@ final readonly class DatabaseStorage implements Storage, SupportsOwnerMerge, Sup
      */
     public function mergeOwners(string $from, string $to, MergeStrategy $strategy, array $policies): void
     {
-        $guestRecords = CartRecord::query()->where('owner', $from)->get();
+        CartRecord::query()->getConnection()->transaction(function () use ($from, $to, $strategy, $policies): void {
+            $guestRecords = CartRecord::query()->where('owner', $from)->get();
 
-        foreach ($guestRecords as $record) {
-            $policy = $policies[$record->list] ?? null;
+            foreach ($guestRecords as $record) {
+                $policy = $policies[$record->list] ?? null;
 
-            if ($policy === null) {
-                continue;
+                if ($policy === null) {
+                    continue;
+                }
+
+                $userPayload = CartRecord::query()
+                    ->where('owner', $to)
+                    ->where('list', $record->list)
+                    ->value('payload') ?? [];
+
+                $merged = Cart::fromArray($policy, $userPayload)
+                    ->merge(Cart::fromArray($policy, $record->payload ?? []), $strategy);
+
+                CartRecord::query()->updateOrCreate(
+                    ['owner' => $to, 'list' => $record->list],
+                    ['payload' => $merged->toArray()],
+                );
+
+                $record->delete();
             }
-
-            $userPayload = CartRecord::query()
-                ->where('owner', $to)
-                ->where('list', $record->list)
-                ->value('payload') ?? [];
-
-            $merged = Cart::fromArray($policy, $userPayload)
-                ->merge(Cart::fromArray($policy, $record->payload ?? []), $strategy);
-
-            CartRecord::query()->updateOrCreate(
-                ['owner' => $to, 'list' => $record->list],
-                ['payload' => $merged->toArray()],
-            );
-        }
-
-        CartRecord::query()->where('owner', $from)->delete();
+        });
     }
 }
