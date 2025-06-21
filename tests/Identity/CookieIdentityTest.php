@@ -38,9 +38,19 @@ final class CookieIdentityTest extends TestCase
 
     public function test_reads_existing_cookie_value(): void
     {
-        $identity = $this->identity(fn (): ?string => 'existing-id');
+        $value = str_repeat('ab', 16);
 
-        $this->assertSame('existing-id', $identity->id());
+        $identity = $this->identity(fn (): ?string => $value);
+
+        $this->assertSame($value, $identity->id());
+    }
+
+    public function test_rejects_forged_cookie_value(): void
+    {
+        $identity = $this->identity(fn (): ?string => '42');
+
+        $this->assertNotSame('42', $identity->id());
+        $this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $identity->id());
     }
 
     public function test_persist_queues_cookie_with_configured_name_and_ttl(): void
