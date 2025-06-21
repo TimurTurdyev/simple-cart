@@ -15,4 +15,9 @@ final class InvalidLineException extends CartException
     {
         return new self("Line quantity must be at least 1, [{$quantity}] given.");
     }
+
+    public static function missingKey(string $key): self
+    {
+        return new self("Line payload is missing the [{$key}] key.");
+    }
 }
