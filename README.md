@@ -112,7 +112,7 @@ Cart::adjust(
     new Shipping(Price::fromMinor(1500)),
 );
 
-Cart::withoutAdjuster('summer');
+Cart::removeAdjuster('summer');
 Cart::totals()->breakdown();    // subtotal, каждая корректировка, total
 ```
 

@@ -50,6 +50,19 @@ final class CartEventsTest extends TestCase
         Event::assertNotDispatched(LineUpdated::class);
     }
 
+    public function test_repeated_add_in_toggle_list_stays_silent(): void
+    {
+        Event::fake();
+
+        $wishlist = $this->app->make(CartManager::class)->list('wishlist');
+        $product = new FakeProduct();
+
+        $wishlist->add($product);
+        $wishlist->add($product);
+
+        Event::assertDispatchedTimes(LineAdded::class, 1);
+    }
+
     public function test_events_can_be_disabled(): void
     {
         config()->set('simple_cart.events', false);
