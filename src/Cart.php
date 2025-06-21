@@ -7,6 +7,7 @@ namespace TimurTurdyev\SimpleCart;
 use Illuminate\Support\Collection;
 use TimurTurdyev\SimpleCart\Contracts\Adjuster;
 use TimurTurdyev\SimpleCart\Exceptions\InvalidAdjusterException;
+use TimurTurdyev\SimpleCart\Exceptions\ListLimitException;
 use TimurTurdyev\SimpleCart\Exceptions\UnknownLineException;
 use TimurTurdyev\SimpleCart\Support\Price;
 use TimurTurdyev\SimpleCart\Support\Totals;
@@ -78,7 +79,7 @@ final readonly class Cart
             return $this->remove($id);
         }
 
-        return $this->withList($this->list->remove($id)->add($line->withQuantity($quantity)));
+        return $this->withList($this->list->replace($line->withQuantity($quantity)));
     }
 
     public function changeQuantity(string $id, int $delta): self
@@ -140,7 +141,11 @@ final readonly class Cart
                 continue;
             }
 
-            $merged = $merged->add($line);
+            try {
+                $merged = $merged->add($line);
+            } catch (ListLimitException) {
+                continue;
+            }
         }
 
         foreach ($guest->adjusters as $name => $adjuster) {
