@@ -9,6 +9,9 @@ use TimurTurdyev\SimpleCart\CartManager;
 use TimurTurdyev\SimpleCart\Contracts\Storage;
 use TimurTurdyev\SimpleCart\Exceptions\UnknownLineException;
 use TimurTurdyev\SimpleCart\ManagedList;
+use TimurTurdyev\SimpleCart\Line;
+use TimurTurdyev\SimpleCart\Support\Price;
+use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeModel;
 use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
 
 final class ManagedListTest extends TestCase
@@ -137,6 +140,38 @@ final class ManagedListTest extends TestCase
     private function manager(): CartManager
     {
         return $this->app->make(CartManager::class);
+    }
+
+    public function test_models_hydrates_lines_with_one_query_per_type(): void
+    {
+        FakeModel::resetQueries();
+        $cart = $this->cart();
+
+        $first = $cart->add(Line::of(1, 'One', Price::fromMinor(100), purchasableType: FakeModel::class));
+        $second = $cart->add(Line::of(2, 'Two', Price::fromMinor(200), purchasableType: FakeModel::class));
+        $plain = $cart->add(Line::of(3, 'Plain', Price::fromMinor(300)));
+
+        $models = $cart->models();
+
+        $this->assertSame(1, FakeModel::$queries);
+        $this->assertCount(2, $models);
+        $this->assertSame(1, $models[$first->id]->id);
+        $this->assertSame(2, $models[$second->id]->id);
+        $this->assertArrayNotHasKey($plain->id, $models->all());
+    }
+
+    public function test_models_primes_line_resolution(): void
+    {
+        FakeModel::resetQueries();
+        $cart = $this->cart();
+
+        $line = $cart->add(Line::of(1, 'One', Price::fromMinor(100), purchasableType: FakeModel::class));
+
+        $cart->models();
+        $model = $cart->get($line->id)->model();
+
+        $this->assertSame(1, FakeModel::$queries);
+        $this->assertSame(1, $model->id);
     }
 
     private function cart(): ManagedList

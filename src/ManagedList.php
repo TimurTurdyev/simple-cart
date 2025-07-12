@@ -14,6 +14,7 @@ use TimurTurdyev\SimpleCart\Events\LineRemoved;
 use TimurTurdyev\SimpleCart\Events\LineUpdated;
 use TimurTurdyev\SimpleCart\Events\ListCleared;
 use TimurTurdyev\SimpleCart\Exceptions\UnknownLineException;
+use TimurTurdyev\SimpleCart\Support\ModelCache;
 use TimurTurdyev\SimpleCart\Support\Price;
 use TimurTurdyev\SimpleCart\Support\Totals;
 
@@ -121,6 +122,51 @@ final class ManagedList
     public function items(): Collection
     {
         return $this->state()->items();
+    }
+
+    /**
+     * @return Collection<string, object>
+     */
+    public function models(): Collection
+    {
+        $byType = [];
+
+        foreach ($this->state()->items() as $line) {
+            $type = $line->purchasableType;
+
+            if ($type === null || ! class_exists($type) || ! method_exists($type, 'query')) {
+                continue;
+            }
+
+            $byType[$type][] = $line;
+        }
+
+        $models = [];
+
+        foreach ($byType as $type => $lines) {
+            $ids = array_values(array_unique(array_map(
+                fn (Line $line): string|int => $line->purchasableId,
+                $lines,
+            )));
+
+            $found = [];
+
+            foreach ($type::query()->findMany($ids) as $model) {
+                $key = method_exists($model, 'getKey') ? $model->getKey() : $model->id;
+                $found[(string) $key] = $model;
+            }
+
+            foreach ($lines as $line) {
+                $model = $found[(string) $line->purchasableId] ?? null;
+                ModelCache::put($line, $model);
+
+                if ($model !== null) {
+                    $models[$line->id] = $model;
+                }
+            }
+        }
+
+        return new Collection($models);
     }
 
     public function count(): int
