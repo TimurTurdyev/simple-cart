@@ -6,6 +6,7 @@ namespace TimurTurdyev\SimpleCart;
 
 use TimurTurdyev\SimpleCart\Contracts\Purchasable;
 use TimurTurdyev\SimpleCart\Exceptions\InvalidLineException;
+use TimurTurdyev\SimpleCart\Support\ModelCache;
 use TimurTurdyev\SimpleCart\Support\Price;
 
 final readonly class Line
@@ -112,7 +113,14 @@ final readonly class Line
             return null;
         }
 
-        return $this->purchasableType::query()->find($this->purchasableId);
+        if (ModelCache::has($this)) {
+            return ModelCache::get($this);
+        }
+
+        $model = $this->purchasableType::query()->find($this->purchasableId);
+        ModelCache::put($this, $model);
+
+        return $model;
     }
 
     public function toArray(): array
