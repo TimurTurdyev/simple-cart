@@ -127,6 +127,10 @@ use TimurTurdyev\SimpleCart\Support\Totals;
 
 final readonly class GiftWrap implements Adjuster
 {
+    public function __construct(private Price $amount)
+    {
+    }
+
     public function name(): string
     {
         return 'gift-wrap';
@@ -134,17 +138,17 @@ final readonly class GiftWrap implements Adjuster
 
     public function adjust(Totals $totals): Totals
     {
-        return $totals->addFee($this->name(), Price::fromMinor(300));
+        return $totals->addFee($this->name(), $this->amount);
     }
 
     public function toArray(): array
     {
-        return [];
+        return ['amount' => $this->amount->minor()];
     }
 
     public static function fromArray(array $data): static
     {
-        return new self();
+        return new self(Price::fromMinor($data['amount']));
     }
 }
 ```
