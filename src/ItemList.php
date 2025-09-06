@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TimurTurdyev\SimpleCart;
 
 use Illuminate\Support\Collection;
+use TimurTurdyev\SimpleCart\Exceptions\InvalidLineException;
 use TimurTurdyev\SimpleCart\Exceptions\ListLimitException;
 use TimurTurdyev\SimpleCart\Support\Price;
 
@@ -129,7 +130,12 @@ final readonly class ItemList
 
     public static function fromArray(ListPolicy $policy, array $data): self
     {
-        return self::make($policy, array_map(Line::fromArray(...), $data));
+        return self::make($policy, array_map(
+            fn (mixed $entry): Line => is_array($entry)
+                ? Line::fromArray($entry)
+                : throw InvalidLineException::invalidPayload(),
+            $data,
+        ));
     }
 
     private function put(Line $line): self

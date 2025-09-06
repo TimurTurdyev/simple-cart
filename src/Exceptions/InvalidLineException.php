@@ -20,4 +20,14 @@ final class InvalidLineException extends CartException
     {
         return new self("Line payload is missing the [{$key}] key.");
     }
+
+    public static function invalidValue(string $key): self
+    {
+        return new self("Line payload has an invalid [{$key}] value.");
+    }
+
+    public static function invalidPayload(): self
+    {
+        return new self('Lines payload must be an array of line payloads.');
+    }
 }
