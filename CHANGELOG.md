@@ -3,6 +3,12 @@
 All notable changes to this package are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.2.2] - 2025-10-18
+
+### Changed
+
+- README banner refreshed: install command, live totals breakdown example, polished typography.
+
 ## [2.2.1] - 2025-09-20
 
 ### Changed
