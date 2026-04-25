@@ -16,11 +16,6 @@ use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
 
 final class ManagedListTest extends TestCase
 {
-    protected function defineEnvironment($app): void
-    {
-        $app['config']->set('session.driver', 'array');
-    }
-
     public function test_add_purchasable_with_options(): void
     {
         $cart = $this->cart();
@@ -88,6 +83,7 @@ final class ManagedListTest extends TestCase
 
     public function test_lazy_storage_record(): void
     {
+        config()->set('simple_cart.storage', 'session');
         $cart = $this->cart();
 
         $cart->isEmpty();
@@ -102,6 +98,7 @@ final class ManagedListTest extends TestCase
 
     public function test_clear_forgets_storage(): void
     {
+        config()->set('simple_cart.storage', 'session');
         $cart = $this->cart();
         $cart->add(new FakeProduct());
         $cart->adjust(new PercentageDiscount('summer', 10));
@@ -135,6 +132,37 @@ final class ManagedListTest extends TestCase
 
         $this->assertTrue($manager->list('cart')->isEmpty());
         $this->assertSame(3, $manager->list('wishlist')->get($line->id)?->quantity);
+    }
+
+    public function test_display_options_outside_key_share_one_line(): void
+    {
+        config()->set('simple_cart.lists.cart.key_options', ['size']);
+        $cart = $this->cart();
+        $product = new FakeProduct(id: 11);
+
+        $first = $cart->add($product, options: ['size' => 'M', 'label' => 'x']);
+        $second = $cart->add($product, options: ['size' => 'M', 'label' => 'y']);
+        $cart->add($product, options: ['size' => 'L', 'label' => 'x']);
+
+        $this->assertSame($first->id, $second->id);
+        $this->assertSame(2, $cart->count());
+        $this->assertSame(2, $cart->get($first->id)->quantity);
+        $this->assertSame('x', $cart->get($first->id)->option('label'));
+        $this->assertTrue($cart->has($product, ['size' => 'M', 'label' => 'z']));
+    }
+
+    public function test_move_rekeys_line_for_target_list(): void
+    {
+        config()->set('simple_cart.lists.cart.key_options', ['size']);
+        $manager = $this->manager();
+        $product = new FakeProduct(id: 11);
+
+        $line = $manager->list('wishlist')->add($product, options: ['size' => 'M', 'label' => 'x']);
+        $manager->list('wishlist')->moveToCart($line->id);
+
+        $this->assertTrue($manager->list('wishlist')->isEmpty());
+        $this->assertTrue($manager->list('cart')->has($product, ['size' => 'M']));
+        $this->assertNull($manager->list('cart')->get($line->id));
     }
 
     private function manager(): CartManager

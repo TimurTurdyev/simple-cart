@@ -1,6 +1,6 @@
 {
     "name": "timurturdyev/simple-cart",
-    "description": "A simple cart, wishlist and compare lists for Laravel - one core, zero migrations",
+    "description": "A simple cart, wishlist and compare lists for Laravel - one core, safe concurrent writes, cart lifecycle",
     "type": "library",
     "license": "MIT",
     "keywords": ["laravel", "cart", "shopping-cart", "wishlist", "compare"],
@@ -13,7 +13,9 @@
     "require": {
         "php": "^8.3",
         "illuminate/auth": "^12.0|^13.0",
-        "illuminate/support": "^12.0|^13.0"
+        "illuminate/support": "^12.0|^13.0",
+        "illuminate/console": "^12.0|^13.0",
+        "illuminate/database": "^12.0|^13.0"
     },
     "require-dev": {
         "orchestra/testbench": "^10.0|^11.0"
@@ -27,9 +29,6 @@
         "psr-4": {
             "TimurTurdyev\\SimpleCart\\Tests\\": "tests/"
         }
-    },
-    "suggest": {
-        "illuminate/database": "Required for the database storage driver"
     },
     "config": {
         "platform": {

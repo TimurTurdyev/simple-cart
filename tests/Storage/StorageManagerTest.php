@@ -6,22 +6,22 @@ namespace TimurTurdyev\SimpleCart\Tests\Storage;
 
 use InvalidArgumentException;
 use TimurTurdyev\SimpleCart\Contracts\Storage;
-use TimurTurdyev\SimpleCart\Storage\SessionStorage;
+use TimurTurdyev\SimpleCart\Storage\DatabaseStorage;
 use TimurTurdyev\SimpleCart\Storage\StorageManager;
 use TimurTurdyev\SimpleCart\Tests\TestCase;
 
 final class StorageManagerTest extends TestCase
 {
-    public function test_default_driver_is_session(): void
+    public function test_default_driver_is_database(): void
     {
         $manager = $this->app->make(StorageManager::class);
 
-        $this->assertInstanceOf(SessionStorage::class, $manager->driver());
+        $this->assertInstanceOf(DatabaseStorage::class, $manager->driver());
     }
 
     public function test_storage_contract_resolves_default_driver(): void
     {
-        $this->assertInstanceOf(SessionStorage::class, $this->app->make(Storage::class));
+        $this->assertInstanceOf(DatabaseStorage::class, $this->app->make(Storage::class));
     }
 
     public function test_custom_driver_via_extend(): void

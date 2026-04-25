@@ -13,16 +13,23 @@ use TimurTurdyev\SimpleCart\Tests\TestCase;
 
 final class IdentityManagerTest extends TestCase
 {
-    public function test_default_driver_is_session(): void
+    public function test_default_driver_is_cookie(): void
     {
         $manager = $this->app->make(IdentityManager::class);
 
-        $this->assertInstanceOf(SessionIdentity::class, $manager->driver());
+        $this->assertInstanceOf(CookieIdentity::class, $manager->driver());
     }
 
     public function test_identity_contract_resolves_default_driver(): void
     {
-        $this->assertInstanceOf(SessionIdentity::class, $this->app->make(CartIdentity::class));
+        $this->assertInstanceOf(CookieIdentity::class, $this->app->make(CartIdentity::class));
+    }
+
+    public function test_session_driver_from_config(): void
+    {
+        config()->set('simple_cart.identity.driver', 'session');
+
+        $this->assertInstanceOf(SessionIdentity::class, $this->app->make(IdentityManager::class)->driver());
     }
 
     public function test_cookie_driver_from_config(): void

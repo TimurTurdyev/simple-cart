@@ -7,6 +7,7 @@ namespace TimurTurdyev\SimpleCart;
 use Illuminate\Support\Collection;
 use TimurTurdyev\SimpleCart\Exceptions\InvalidLineException;
 use TimurTurdyev\SimpleCart\Exceptions\ListLimitException;
+use TimurTurdyev\SimpleCart\Exceptions\QuantityRuleException;
 use TimurTurdyev\SimpleCart\Support\Price;
 
 final readonly class ItemList
@@ -40,12 +41,34 @@ final readonly class ItemList
                 return $this;
             }
 
-            return $this->put($existing->addQuantity($line->quantity));
+            return $this->put($this->checked($existing->addQuantity($line->quantity)));
         }
 
         $this->assertLimit();
 
-        return $this->put($line);
+        return $this->put($this->checked($line));
+    }
+
+    /**
+     * Like add(), but fits the resulting quantity into the quantity rule
+     * instead of failing: used when lists are merged or lines are moved, where
+     * the sum of two valid quantities may fall off the step grid.
+     */
+    public function mergeLine(Line $line): self
+    {
+        $existing = $this->lines[$line->id] ?? null;
+
+        if ($existing !== null) {
+            if ($this->policy->mode === ListMode::Toggle) {
+                return $this;
+            }
+
+            return $this->put($this->fitted($existing->addQuantity($line->quantity)));
+        }
+
+        $this->assertLimit();
+
+        return $this->put($this->fitted($line));
     }
 
     public function toggle(Line $line): self
@@ -61,7 +84,19 @@ final readonly class ItemList
 
     public function replace(Line $line): self
     {
-        return $this->put($line);
+        return $this->put($this->checked($line));
+    }
+
+    public function reprice(string $id, Price $price): self
+    {
+        $line = $this->lines[$id] ?? null;
+
+        return $line === null ? $this : $this->put($line->withPrice($price));
+    }
+
+    public function acknowledgePrices(): self
+    {
+        return new self($this->policy, array_map(fn (Line $line): Line => $line->acknowledgePrice(), $this->lines));
     }
 
     public function remove(string $id): self
@@ -141,6 +176,28 @@ final readonly class ItemList
     private function put(Line $line): self
     {
         return new self($this->policy, [...$this->lines, $line->id => $line]);
+    }
+
+    private function checked(Line $line): Line
+    {
+        $rule = $this->policy->quantityRuleFor($line);
+
+        if ($rule !== null && ! $rule->isValid($line->quantity)) {
+            throw QuantityRuleException::violated($rule, $line->quantity);
+        }
+
+        return $line;
+    }
+
+    private function fitted(Line $line): Line
+    {
+        $rule = $this->policy->quantityRuleFor($line);
+
+        if ($rule === null || $rule->isValid($line->quantity)) {
+            return $line;
+        }
+
+        return $line->withQuantity($rule->normalize($line->quantity));
     }
 
     private function assertLimit(): void

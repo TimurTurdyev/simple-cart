@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace TimurTurdyev\SimpleCart;
 
+use TimurTurdyev\SimpleCart\Contracts\HasQuantityRule;
 use TimurTurdyev\SimpleCart\Contracts\Purchasable;
+use TimurTurdyev\SimpleCart\Exceptions\InvalidConfigurationException;
 use TimurTurdyev\SimpleCart\Exceptions\InvalidLineException;
 use TimurTurdyev\SimpleCart\Support\ModelCache;
 use TimurTurdyev\SimpleCart\Support\Price;
+use TimurTurdyev\SimpleCart\Support\QuantityRule;
 
 final readonly class Line
 {
@@ -20,6 +23,8 @@ final readonly class Line
         public int $quantity,
         public array $options,
         public array $meta = [],
+        public ?QuantityRule $quantityRule = null,
+        public ?Price $previousPrice = null,
     ) {
         if (trim($this->name) === '') {
             throw InvalidLineException::emptyName();
@@ -38,9 +43,11 @@ final readonly class Line
         array $options = [],
         ?string $purchasableType = null,
         array $meta = [],
+        ?array $keyOptions = null,
+        ?QuantityRule $quantityRule = null,
     ): self {
         return new self(
-            id: self::identity($purchasableId, $options, $purchasableType),
+            id: self::identity($purchasableId, $options, $purchasableType, $keyOptions),
             purchasableId: $purchasableId,
             purchasableType: $purchasableType,
             name: $name,
@@ -48,11 +55,17 @@ final readonly class Line
             quantity: $quantity,
             options: $options,
             meta: $meta,
+            quantityRule: $quantityRule,
         );
     }
 
-    public static function for(Purchasable $item, int $quantity = 1, array $options = [], array $meta = []): self
-    {
+    public static function for(
+        Purchasable $item,
+        int $quantity = 1,
+        array $options = [],
+        array $meta = [],
+        ?array $keyOptions = null,
+    ): self {
         return self::of(
             purchasableId: $item->cartId(),
             name: $item->cartName(),
@@ -61,14 +74,44 @@ final readonly class Line
             options: $options,
             purchasableType: $item::class,
             meta: $meta,
+            keyOptions: $keyOptions,
+            quantityRule: $item instanceof HasQuantityRule ? $item->cartQuantityRule() : null,
         );
     }
 
-    public static function identity(string|int $purchasableId, array $options = [], ?string $type = null): string
-    {
+    /**
+     * @param list<string>|null $keyOptions Only these option keys take part in
+     *                                      the identity; null means every option.
+     */
+    public static function identity(
+        string|int $purchasableId,
+        array $options = [],
+        ?string $type = null,
+        ?array $keyOptions = null,
+    ): string {
+        if ($keyOptions !== null) {
+            $options = array_intersect_key($options, array_flip($keyOptions));
+        }
+
         $normalized = self::normalize($options);
 
         return substr(sha1($type.'|'.$purchasableId.'|'.json_encode($normalized)), 0, 16);
+    }
+
+    public function withIdentity(?array $keyOptions): self
+    {
+        return new self(
+            self::identity($this->purchasableId, $this->options, $this->purchasableType, $keyOptions),
+            $this->purchasableId,
+            $this->purchasableType,
+            $this->name,
+            $this->price,
+            $this->quantity,
+            $this->options,
+            $this->meta,
+            $this->quantityRule,
+            $this->previousPrice,
+        );
     }
 
     public function withQuantity(int $quantity): self
@@ -82,7 +125,34 @@ final readonly class Line
             $quantity,
             $this->options,
             $this->meta,
+            $this->quantityRule,
+            $this->previousPrice,
         );
+    }
+
+    /**
+     * Sets the current price and remembers the price the customer saw before
+     * the first unacknowledged change; returning to that price clears the mark.
+     */
+    public function withPrice(Price $price): self
+    {
+        if ($price->equals($this->price)) {
+            return $this;
+        }
+
+        $seen = $this->previousPrice ?? $this->price;
+
+        return $this->copyWithPrice($price, $price->equals($seen) ? null : $seen);
+    }
+
+    public function priceChanged(): bool
+    {
+        return $this->previousPrice !== null;
+    }
+
+    public function acknowledgePrice(): self
+    {
+        return $this->previousPrice === null ? $this : $this->copyWithPrice($this->price, null);
     }
 
     public function addQuantity(int $quantity): self
@@ -125,7 +195,7 @@ final readonly class Line
 
     public function toArray(): array
     {
-        return [
+        $data = [
             'id' => $this->id,
             'purchasable_id' => $this->purchasableId,
             'purchasable_type' => $this->purchasableType,
@@ -135,6 +205,16 @@ final readonly class Line
             'options' => $this->options,
             'meta' => $this->meta,
         ];
+
+        if ($this->quantityRule !== null) {
+            $data['quantity_rule'] = $this->quantityRule->toArray();
+        }
+
+        if ($this->previousPrice !== null) {
+            $data['previous_price'] = $this->previousPrice->minor();
+        }
+
+        return $data;
     }
 
     public static function fromArray(array $data): self
@@ -154,6 +234,8 @@ final readonly class Line
             'quantity' => is_int($data['quantity']),
             'options' => is_array($data['options'] ?? []),
             'meta' => is_array($data['meta'] ?? []),
+            'quantity_rule' => is_array($data['quantity_rule'] ?? null) || ($data['quantity_rule'] ?? null) === null,
+            'previous_price' => is_int($data['previous_price'] ?? null) || ($data['previous_price'] ?? null) === null,
         ];
 
         foreach ($checks as $key => $valid) {
@@ -171,7 +253,38 @@ final readonly class Line
             quantity: $data['quantity'],
             options: $data['options'] ?? [],
             meta: $data['meta'] ?? [],
+            quantityRule: self::ruleFromArray($data['quantity_rule'] ?? null),
+            previousPrice: isset($data['previous_price']) ? Price::fromMinor($data['previous_price']) : null,
         );
+    }
+
+    private function copyWithPrice(Price $price, ?Price $previousPrice): self
+    {
+        return new self(
+            $this->id,
+            $this->purchasableId,
+            $this->purchasableType,
+            $this->name,
+            $price,
+            $this->quantity,
+            $this->options,
+            $this->meta,
+            $this->quantityRule,
+            $previousPrice,
+        );
+    }
+
+    private static function ruleFromArray(?array $data): ?QuantityRule
+    {
+        if ($data === null) {
+            return null;
+        }
+
+        try {
+            return QuantityRule::fromArray($data);
+        } catch (InvalidConfigurationException) {
+            throw InvalidLineException::invalidValue('quantity_rule');
+        }
     }
 
     private static function normalize(array $options): array

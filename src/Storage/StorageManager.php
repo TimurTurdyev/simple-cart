@@ -14,7 +14,7 @@ final class StorageManager extends Manager
 {
     public function getDefaultDriver(): string
     {
-        return $this->config->get('simple_cart.storage', 'session');
+        return $this->config->get('simple_cart.storage', 'database');
     }
 
     protected function createDriver($driver)
@@ -43,7 +43,10 @@ final class StorageManager extends Manager
 
     protected function createDatabaseDriver(): Storage
     {
-        return new DatabaseStorage($this->ownerIdentity());
+        return new DatabaseStorage(
+            identity: $this->ownerIdentity(),
+            retries: (int) $this->config->get('simple_cart.database.retries', 3),
+        );
     }
 
     private function ownerIdentity(): CartIdentity

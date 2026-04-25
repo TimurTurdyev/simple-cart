@@ -9,11 +9,6 @@ use TimurTurdyev\SimpleCart\Tests\TestCase;
 
 final class SessionStorageTest extends TestCase
 {
-    protected function defineEnvironment($app): void
-    {
-        $app['config']->set('session.driver', 'array');
-    }
-
     public function test_read_missing_list_returns_empty_array(): void
     {
         $this->assertSame([], $this->storage()->read('cart'));

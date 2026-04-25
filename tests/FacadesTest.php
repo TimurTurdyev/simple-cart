@@ -12,11 +12,6 @@ use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
 
 final class FacadesTest extends TestCase
 {
-    protected function defineEnvironment($app): void
-    {
-        $app['config']->set('session.driver', 'array');
-    }
-
     public function test_cart_facade(): void
     {
         Cart::add(new FakeProduct(price: 1000), quantity: 2);

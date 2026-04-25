@@ -10,7 +10,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create(config('simple_cart.database.table', 'simple_cart_lists'), function (Blueprint $table): void {
+        $table = config('simple_cart.database.table', 'simple_cart_lists');
+
+        if (Schema::hasTable($table)) {
+            return;
+        }
+
+        Schema::create($table, function (Blueprint $table): void {
             $table->id();
             $table->string('owner');
             $table->string('list');

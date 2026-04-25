@@ -10,11 +10,6 @@ use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
 
 final class CartManagerTest extends TestCase
 {
-    protected function defineEnvironment($app): void
-    {
-        $app['config']->set('session.driver', 'array');
-    }
-
     public function test_resolves_configured_lists(): void
     {
         $manager = $this->app->make(CartManager::class);

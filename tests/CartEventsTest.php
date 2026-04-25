@@ -14,11 +14,6 @@ use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
 
 final class CartEventsTest extends TestCase
 {
-    protected function defineEnvironment($app): void
-    {
-        $app['config']->set('session.driver', 'array');
-    }
-
     public function test_lifecycle_events(): void
     {
         Event::fake();

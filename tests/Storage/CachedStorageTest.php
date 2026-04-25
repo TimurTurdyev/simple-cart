@@ -8,23 +8,15 @@ use TimurTurdyev\SimpleCart\CartManager;
 use TimurTurdyev\SimpleCart\Contracts\CartIdentity;
 use TimurTurdyev\SimpleCart\Contracts\Storage;
 use TimurTurdyev\SimpleCart\Identity\AuthAwareIdentity;
+use TimurTurdyev\SimpleCart\Exceptions\ConcurrentModificationException;
 use TimurTurdyev\SimpleCart\Storage\CachedStorage;
+use TimurTurdyev\SimpleCart\Storage\DatabaseStorage;
 use TimurTurdyev\SimpleCart\Storage\StorageManager;
 use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
 use TimurTurdyev\SimpleCart\Tests\TestCase;
 
 final class CachedStorageTest extends TestCase
 {
-    protected function defineEnvironment($app): void
-    {
-        $app['config']->set('database.default', 'testing');
-    }
-
-    protected function defineDatabaseMigrations(): void
-    {
-        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
-    }
-
     public function test_read_hits_inner_only_on_cache_miss(): void
     {
         $inner = new CountingStorage(['cart' => ['lines' => ['a']]]);
@@ -114,6 +106,7 @@ final class CachedStorageTest extends TestCase
 
     public function test_manager_wraps_custom_extend_driver(): void
     {
+        config()->set('simple_cart.identity.driver', 'session');
         config()->set('simple_cart.storage', 'custom');
         config()->set('simple_cart.cache', [
             'enabled' => true,
@@ -153,6 +146,11 @@ final class CachedStorageTest extends TestCase
         $connection->enableQueryLog();
 
         $this->assertSame(1, $this->reader()->list('cart')->count());
+        $this->assertCount(1, $connection->getQueryLog(), 'A write drops the key, the first read primes it.');
+
+        $connection->flushQueryLog();
+
+        $this->assertSame(1, $this->reader()->list('cart')->count());
         $this->assertCount(0, $connection->getQueryLog());
     }
 
@@ -168,6 +166,50 @@ final class CachedStorageTest extends TestCase
 
         $this->assertSame(1, $this->reader()->list('cart')->count());
         $this->assertCount(1, $connection->getQueryLog());
+    }
+
+    public function test_atomic_update_drops_cache_key_and_next_read_goes_to_inner(): void
+    {
+        $cached = $this->cached(new DatabaseStorage(new FixedOwner('owner-1')));
+
+        $this->assertSame([], $cached->read('cart'));
+
+        $result = $cached->update('cart', fn (array $payload): array => ['lines' => ['a']]);
+
+        $this->assertSame(['lines' => ['a']], $result);
+        $this->assertFalse($this->app->make('cache')->store('array')->has('simple_cart_owner-1'));
+        $this->assertSame(['lines' => ['a']], $cached->read('cart'));
+    }
+
+    public function test_failed_atomic_update_drops_cache_key(): void
+    {
+        $inner = new DatabaseStorage(new FixedOwner('owner-1'), retries: 1);
+        $cached = $this->cached($inner);
+        $inner->write('cart', ['lines' => ['a']]);
+        $cached->read('cart');
+
+        try {
+            $cached->update('cart', function (): array {
+                (new DatabaseStorage(new FixedOwner('owner-1')))->write('cart', ['lines' => ['other']]);
+
+                return ['lines' => ['mine']];
+            });
+            $this->fail('Expected ConcurrentModificationException.');
+        } catch (ConcurrentModificationException) {
+        }
+
+        $this->assertSame(['lines' => ['other']], $cached->read('cart'));
+    }
+
+    public function test_update_over_plain_inner_falls_back_to_write(): void
+    {
+        $inner = new CountingStorage(['cart' => ['lines' => ['a']]]);
+        $cached = $this->cached($inner);
+
+        $result = $cached->update('cart', fn (array $payload): array => ['lines' => [...$payload['lines'], 'b']]);
+
+        $this->assertSame(['lines' => ['a', 'b']], $result);
+        $this->assertSame(['lines' => ['a', 'b']], $inner->read('cart'));
     }
 
     private function cached(Storage $inner, CartIdentity|string $identity = 'owner-1'): CachedStorage
