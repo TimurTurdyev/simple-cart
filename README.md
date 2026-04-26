@@ -194,6 +194,34 @@ Cart::moveTo('wishlist', $line->id);   // отложить на потом
 Wishlist::moveToCart($item);
 ```
 
+## Правила количества
+
+```php
+use TimurTurdyev\SimpleCart\Contracts\HasQuantityRule;
+use TimurTurdyev\SimpleCart\Support\QuantityRule;
+
+class Box extends Model implements Purchasable, HasQuantityRule
+{
+    public function cartQuantityRule(): QuantityRule
+    {
+        return new QuantityRule(min: 66, step: 66, max: 660);
+    }
+}
+
+'cart' => ['policy' => 'append', 'quantity' => ['min' => 1, 'step' => 1, 'max' => 99]],
+```
+
+```php
+Cart::add($box);                    // 66
+Cart::add($box, quantity: 70);      // QuantityRuleException: min, step, max, given
+Cart::stepQuantity($line->id, -1);  // минус шаг, ниже min строка уходит
+
+$rule->isValid(70);                 // false
+$rule->normalize(70);               // 132
+```
+
+Слияние корзин и `moveToCart()` подгоняют количество через `normalize()`. Закладки и сравнение правила не проверяют.
+
 ## Хранилище
 
 По умолчанию session: работает сразу после установки, пустые списки не оставляют записей. Переключение на базу - одна строка конфига:
