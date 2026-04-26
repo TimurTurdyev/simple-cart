@@ -28,6 +28,7 @@ use TimurTurdyev\SimpleCart\Facades\Wishlist;
 $line = Cart::add($item, quantity: 2, options: ['size' => 'm']);
 
 Cart::setQuantity($line->id, 5);
+Cart::stepQuantity($line->id);      // кнопка "+": шаг из правила количества
 Cart::total();                // Price: ->minor(), ->decimal(), ->format()
 
 Wishlist::toggle($item);      // первый вызов добавляет, второй убирает
