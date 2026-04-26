@@ -222,6 +222,26 @@ $rule->normalize(70);               // 132
 
 Слияние корзин и `moveToCart()` подгоняют количество через `normalize()`. Закладки и сравнение правила не проверяют.
 
+## Переоценка
+
+```php
+Cart::reprice(fn (Line $line): ?Price => $catalog->priceFor($line));   // null - не трогать
+Cart::reprice();                                      // цены из моделей
+Cart::repriceLine($line->id, Price::fromMinor(1200));
+```
+
+```blade
+@if ($line->priceChanged())
+    было {{ $line->previousPrice->format() }}, стало {{ $line->price->format() }}
+@endif
+```
+
+```php
+Cart::acknowledgePrices();
+```
+
+Событие `LineRepriced` на каждую строку.
+
 ## Хранилище
 
 По умолчанию session: работает сразу после установки, пустые списки не оставляют записей. Переключение на базу - одна строка конфига:
