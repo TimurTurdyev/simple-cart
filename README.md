@@ -82,6 +82,15 @@ Cart::add($item, options: ['size' => 'l']);    // вторая строка
 Cart::has($item, options: ['size' => 'm']);    // true
 ```
 
+Ключ только по части опций:
+
+```php
+'cart' => ['policy' => 'append', 'key_options' => ['size']],
+
+Cart::add($item, options: ['size' => 'm', 'label' => 'Хит']);
+Cart::add($item, options: ['size' => 'm', 'label' => 'Новинка']);   // та же строка
+```
+
 Данные вне идентичности (зафиксированная картинка, метка времени) живут в `meta`:
 
 ```php
