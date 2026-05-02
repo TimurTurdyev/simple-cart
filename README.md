@@ -341,6 +341,26 @@ $order = DB::transaction(function () {
 
 Брошенные корзины админка находит SQL-запросом по `updated_at`. Внутрь payload пускают json-функции БД и модель `TimurTurdyev\SimpleCart\Storage\CartRecord`. Цены в минорных единицах, курсов валют тут нет.
 
+## Чистка
+
+```php
+// routes/console.php
+Schedule::command('simple-cart:prune')->daily();
+```
+
+```php
+'prune' => [
+    'expire_after_days' => 30,          // null - не истекать
+    'delete_after_days' => [
+        'expired' => 30,
+        'merged' => 7,
+        'ordered' => null,              // null - хранить
+    ],
+],
+```
+
+Срок касается и корзин пользователей. `--dry-run` только считает.
+
 ## Переход с darryldecode/laravelshoppingcart
 
 Таблица соответствия API и рецепт переноса данных - в [UPGRADE.md](UPGRADE.md). Встроенного импорта нет: старые корзины переносит одноразовый скрипт приложения через `forOwner($ownerId)->write(...)`, id владельцев не меняются, живые cookie продолжают находить свои корзины.
