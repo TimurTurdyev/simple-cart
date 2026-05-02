@@ -304,7 +304,7 @@ Cookie ставится лениво, при первой реальной за�
 
 ## События
 
-`LineAdded`, `LineUpdated`, `LineRemoved`, `ListCleared`. В каждом - имя списка и строка. Отключаются через `'events' => false`.
+`LineAdded`, `LineUpdated`, `LineRemoved`, `LineRepriced`, `ListAttributesUpdated`, `ListCleared`, `ListCheckedOut`. Отключаются через `'events' => false`.
 
 ## Оформление заказа
 
