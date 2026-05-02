@@ -257,16 +257,13 @@ Cart::forgetAttribute('draft');
 
 ## Хранилище
 
-По умолчанию session: работает сразу после установки, пустые списки не оставляют записей. Переключение на базу - одна строка конфига:
+По умолчанию database, таблица `simple_cart_lists`:
 
 ```php
-'storage' => 'database',
+'storage' => env('CART_STORAGE', 'database'),   // или 'session'
 ```
 
-```bash
-php artisan vendor:publish --tag=simple-cart-migrations
-php artisan migrate
-```
+У записи есть версия. Если две вкладки пишут одновременно, вторая правка повторяется на свежих данных, оба товара остаются. Лимит повторов `database.retries`, потом `ConcurrentModificationException`.
 
 При логине гостевая корзина сливается с корзиной пользователя. Стратегии: `sum` (количества складываются), `keep` (строки пользователя важнее), `replace` (гостевая заменяет). Сливать умеют драйверы с `SupportsOwnerMerge` (database умеет из коробки), с остальными листенер просто пропускает логин.
 
