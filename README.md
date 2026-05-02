@@ -308,7 +308,7 @@ Cookie ставится лениво, при первой реальной за�
 
 ## Оформление заказа
 
-Заказ - зона приложения: модель, статусы, оплата и нумерация живут на его стороне. Пакет отдает снапшот корзины и очищает ее:
+Заказ - зона приложения: модель, статусы, оплата и нумерация живут на его стороне.
 
 ```php
 use Illuminate\Support\Facades\DB;
@@ -317,22 +317,23 @@ use TimurTurdyev\SimpleCart\Line;
 use TimurTurdyev\SimpleCart\Support\Price;
 
 $order = DB::transaction(function () {
-    $breakdown = Cart::totals()->breakdown();
+    $number = Order::nextNumber();
+    $snapshot = Cart::checkout(reference: $number);
+    $breakdown = $snapshot->totals()->breakdown();
 
-    $order = Order::create([
-        'lines' => Cart::items()->map(fn (Line $line): array => $line->toArray())->values()->all(),
+    return Order::create([
+        'number' => $number,
+        'lines' => $snapshot->items()->map(fn (Line $line): array => $line->toArray())->values()->all(),
         'subtotal' => $breakdown['subtotal']->minor(),
         'adjustments' => array_map(fn (Price $amount): int => $amount->minor(), $breakdown['adjustments']),
         'total' => $breakdown['total']->minor(),
     ]);
-
-    Cart::clear();
-
-    return $order;
 });
 ```
 
-Цены зафиксированы в момент `add()` и лежат в минорных единицах - подорожание товара между добавлением и оформлением на заказ не влияет. Скидки в снапшоте отрицательные, поэтому `subtotal + adjustments = total`. `clear()` шлет `ListCleared` - удобная точка для аналитики. Сценарий закреплен тестом `tests/CheckoutRecipeTest.php`.
+Запись остается со статусом `ordered` и номером в `reference`, следующий `add()` начнет новую корзину. Скидки в снапшоте отрицательные, `subtotal + adjustments = total`. Сценарий закреплен тестом `tests/CheckoutRecipeTest.php`.
+
+`clear()` удаляет запись, как раньше.
 
 ## Аналитика и брошенные корзины
 
