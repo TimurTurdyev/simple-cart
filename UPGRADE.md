@@ -1,5 +1,29 @@
 # Upgrade Guide
 
+## From 2.x to 3.0
+
+```bash
+php artisan migrate
+```
+
+The upgrade migration adds `version`, `status`, `status_changed_at`, `reference`, `slot` and changes the unique index to `(owner, list, slot)`. Old rows stay active. Try it on a copy of the database first.
+
+Defaults are `storage = database` and `identity.driver = cookie`. Old behaviour:
+
+```dotenv
+CART_STORAGE=session
+CART_IDENTITY=session
+```
+
+Other changes:
+
+- `add()` quantity is `?int`; null means the rule minimum, or 1.
+- On login the guest list is kept with `status = merged`. Count only `CartRecord::query()->active()`.
+- After an order call `Cart::checkout($number)` instead of `clear()`.
+- Readers of the table should filter `slot = ''`.
+- Cookie ids must match `identity.cookie.pattern`; for `uniqid('cart', true)` use `'/^([0-9a-f]{32}|cart[0-9a-f]{13}\d\.\d{8})$/'`.
+- Schedule `php artisan simple-cart:prune`.
+
 ## From 1.0 to 2.0
 
 - The package is renamed: require `timurturdyev/simple-cart` instead of `timurturdyev/laravel-cart` and change the namespace prefix `TimurTurdyev\Cart` to `TimurTurdyev\SimpleCart` in your imports.
