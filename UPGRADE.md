@@ -1,5 +1,17 @@
 # Upgrade Guide
 
+## From 3.0 to 3.1
+
+Nothing to change. To keep carts of a separate customer guard apart:
+
+```php
+'identity' => [
+    'auth' => ['guard' => 'customer', 'prefix' => 'customer:'],
+],
+```
+
+Existing user carts are stored under the bare id; with a new prefix move them once, e.g. `update simple_cart_lists set owner = concat('customer:', owner) where ...`.
+
 ## From 2.x to 3.0
 
 ```bash
