@@ -52,7 +52,7 @@ final class StorageManager extends Manager
     private function ownerIdentity(): CartIdentity
     {
         return new AuthAwareIdentity(
-            authId: fn (): int|string|null => $this->container->make('auth')->guard()->id(),
+            authId: fn (): ?string => $this->container->make(IdentityManager::class)->authOwner(),
             guest: $this->container->make(IdentityManager::class)->driver(),
         );
     }
