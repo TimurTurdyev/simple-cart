@@ -1,0 +1,84 @@
+<svg width="1200" height="360" viewBox="0 0 1200 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="0.55" stop-color="#1e1b4b"/>
+      <stop offset="1" stop-color="#312e81"/>
+    </linearGradient>
+    <linearGradient id="tile" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff2d20"/>
+      <stop offset="1" stop-color="#f97316"/>
+    </linearGradient>
+    <linearGradient id="line" x1="340" y1="0" x2="1120" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff2d20"/>
+      <stop offset="0.5" stop-color="#a78bfa"/>
+      <stop offset="1" stop-color="#34d399"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="60"/>
+    </filter>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="360" rx="24" fill="url(#bg)"/>
+  <circle cx="150" cy="330" r="150" fill="#ff2d20" opacity="0.22" filter="url(#glow)"/>
+  <circle cx="1080" cy="40" r="160" fill="#8b5cf6" opacity="0.25" filter="url(#glow)"/>
+  <circle cx="700" cy="380" r="120" fill="#34d399" opacity="0.12" filter="url(#glow)"/>
+
+  <g filter="url(#soft)">
+    <rect x="80" y="80" width="200" height="200" rx="44" fill="url(#tile)"/>
+  </g>
+  <g transform="translate(108 112) scale(6)" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="8" cy="21" r="1.1"/>
+    <circle cx="19" cy="21" r="1.1"/>
+    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+  </g>
+
+  <text x="340" y="150" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="68" font-weight="800" fill="#ffffff" letter-spacing="-1">Laravel Cart</text>
+  <text x="340" y="196" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="25" fill="#c7d2fe">Shopping cart, wishlist and compare lists on one core</text>
+
+  <g font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="19" font-weight="600">
+    <rect x="340" y="226" width="150" height="44" rx="22" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18"/>
+    <g transform="translate(358 235) scale(1.1)" stroke="#fb7185" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+    </g>
+    <text x="392" y="254" fill="#e2e8f0">Wishlist</text>
+
+    <rect x="502" y="226" width="152" height="44" rx="22" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18"/>
+    <g transform="translate(520 235) scale(1.1)" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="m16 3 4 4-4 4"/>
+      <path d="M20 7H4"/>
+      <path d="m8 21-4-4 4-4"/>
+      <path d="M4 17h16"/>
+    </g>
+    <text x="554" y="254" fill="#e2e8f0">Compare</text>
+
+    <rect x="666" y="226" width="158" height="44" rx="22" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18"/>
+    <g transform="translate(684 235) scale(1.1)" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <line x1="19" y1="5" x2="5" y2="19"/>
+      <circle cx="6.5" cy="6.5" r="2.5"/>
+      <circle cx="17.5" cy="17.5" r="2.5"/>
+    </g>
+    <text x="718" y="254" fill="#e2e8f0">Adjusters</text>
+
+    <rect x="836" y="226" width="130" height="44" rx="22" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18"/>
+    <text x="856" y="254" fill="#e2e8f0">PHP 8.3+</text>
+
+    <rect x="978" y="226" width="142" height="44" rx="22" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18"/>
+    <text x="998" y="254" fill="#e2e8f0">Laravel 12</text>
+  </g>
+
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17">
+    <line x1="340" y1="312" x2="1120" y2="312" stroke="url(#line)" stroke-width="2" stroke-dasharray="2 6" opacity="0.8"/>
+    <rect x="340" y="296" width="104" height="32" rx="16" fill="#0f172a" stroke="#475569"/>
+    <text x="360" y="317" fill="#94a3b8">subtotal</text>
+    <rect x="586" y="296" width="130" height="32" rx="16" fill="#0f172a" stroke="#7c3aed"/>
+    <text x="606" y="317" fill="#c4b5fd">discounts</text>
+    <rect x="858" y="296" width="112" height="32" rx="16" fill="#0f172a" stroke="#0ea5e9"/>
+    <text x="878" y="317" fill="#7dd3fc">shipping</text>
+    <rect x="1040" y="296" width="80" height="32" rx="16" fill="#064e3b" stroke="#34d399"/>
+    <text x="1060" y="317" fill="#6ee7b7">total</text>
+  </g>
+</svg>
