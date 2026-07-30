@@ -80,6 +80,36 @@ final class LineTest extends TestCase
         $this->assertEquals($line, $restored);
     }
 
+    public function test_meta_does_not_affect_identity(): void
+    {
+        $plain = Line::of(1, 'Item', Price::fromMinor(100));
+        $tagged = Line::of(1, 'Item', Price::fromMinor(100), meta: ['image' => 'a.jpg']);
+
+        $this->assertSame($plain->id, $tagged->id);
+        $this->assertSame('a.jpg', $tagged->meta('image'));
+        $this->assertSame('none', $tagged->meta('missing', 'none'));
+    }
+
+    public function test_meta_survives_roundtrip_and_quantity_change(): void
+    {
+        $line = Line::of(1, 'Item', Price::fromMinor(100), meta: ['date' => 123]);
+
+        $this->assertSame(123, Line::fromArray($line->toArray())->meta('date'));
+        $this->assertSame(123, $line->withQuantity(5)->meta('date'));
+    }
+
+    public function test_model_resolution(): void
+    {
+        $line = Line::of(7, 'Item', Price::fromMinor(100), purchasableType: \TimurTurdyev\Cart\Tests\Fixtures\FakeModel::class);
+
+        $model = $line->model();
+
+        $this->assertInstanceOf(\TimurTurdyev\Cart\Tests\Fixtures\FakeModel::class, $model);
+        $this->assertSame(7, $model->id);
+        $this->assertNull(Line::of(7, 'Item', Price::fromMinor(100))->model());
+        $this->assertNull(Line::of(7, 'Item', Price::fromMinor(100), purchasableType: 'App\\Missing')->model());
+    }
+
     public function test_rejects_empty_name(): void
     {
         $this->expectException(InvalidLineException::class);
