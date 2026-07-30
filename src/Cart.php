@@ -127,6 +127,31 @@ final readonly class Cart
         return $this->totals()->total();
     }
 
+    public function merge(self $guest, MergeStrategy $strategy): self
+    {
+        if ($strategy === MergeStrategy::Replace) {
+            return $guest;
+        }
+
+        $merged = $this;
+
+        foreach ($guest->list->lines as $line) {
+            if ($strategy === MergeStrategy::Keep && $merged->has($line->id)) {
+                continue;
+            }
+
+            $merged = $merged->add($line);
+        }
+
+        foreach ($guest->adjusters as $name => $adjuster) {
+            if (! isset($merged->adjusters[$name])) {
+                $merged = $merged->adjust($adjuster);
+            }
+        }
+
+        return $merged;
+    }
+
     public function clear(): self
     {
         return new self($this->list->clear(), []);
