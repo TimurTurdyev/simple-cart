@@ -1,0 +1,51 @@
+<?php
+
+declare(strict_types=1);
+
+namespace TimurTurdyev\Cart\Tests;
+
+use TimurTurdyev\Cart\Exceptions\ListLimitException;
+use TimurTurdyev\Cart\Facades\Cart;
+use TimurTurdyev\Cart\Facades\Compare;
+use TimurTurdyev\Cart\Facades\Wishlist;
+use TimurTurdyev\Cart\Tests\Fixtures\FakeProduct;
+
+final class FacadesTest extends TestCase
+{
+    protected function defineEnvironment($app): void
+    {
+        $app['config']->set('session.driver', 'array');
+    }
+
+    public function test_cart_facade(): void
+    {
+        Cart::add(new FakeProduct(price: 1000), quantity: 2);
+
+        $this->assertSame(2000, Cart::total()->minor());
+        $this->assertSame(2, Cart::totalQuantity());
+    }
+
+    public function test_wishlist_facade_toggle_and_move(): void
+    {
+        $product = new FakeProduct(price: 500);
+
+        Wishlist::toggle($product);
+        $this->assertTrue(Wishlist::has($product));
+
+        Wishlist::moveToCart($product);
+
+        $this->assertTrue(Wishlist::isEmpty());
+        $this->assertTrue(Cart::has($product));
+    }
+
+    public function test_compare_facade_respects_limit(): void
+    {
+        for ($i = 1; $i <= 4; $i++) {
+            Compare::add(new FakeProduct(id: $i));
+        }
+
+        $this->expectException(ListLimitException::class);
+
+        Compare::add(new FakeProduct(id: 5));
+    }
+}
