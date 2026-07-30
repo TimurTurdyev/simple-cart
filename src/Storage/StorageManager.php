@@ -18,4 +18,13 @@ final class StorageManager extends Manager
     {
         return new SessionStorage($this->container->make('session.store'));
     }
+
+    protected function createDatabaseDriver(): Storage
+    {
+        return new DatabaseStorage(function (): string {
+            $userId = $this->container->make('auth')->guard()->id();
+
+            return (string) ($userId ?? $this->container->make('session.store')->getId());
+        });
+    }
 }
