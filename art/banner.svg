@@ -1,19 +1,25 @@
 <svg width="1200" height="360" viewBox="0 0 1200 360" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="360" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#0f172a"/>
-      <stop offset="0.55" stop-color="#1e1b4b"/>
-      <stop offset="1" stop-color="#312e81"/>
+      <stop offset="0" stop-color="#0b1120"/>
+      <stop offset="0.55" stop-color="#181439"/>
+      <stop offset="1" stop-color="#2c2470"/>
     </linearGradient>
     <linearGradient id="tile" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#ff2d20"/>
       <stop offset="1" stop-color="#f97316"/>
     </linearGradient>
-    <linearGradient id="line" x1="340" y1="0" x2="1120" y2="0" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ff2d20"/>
-      <stop offset="0.5" stop-color="#a78bfa"/>
-      <stop offset="1" stop-color="#34d399"/>
+    <linearGradient id="shine" x1="0" y1="80" x2="0" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
     </linearGradient>
+    <linearGradient id="title" x1="340" y1="92" x2="340" y2="158" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#c7d2fe"/>
+    </linearGradient>
+    <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.2" fill="#ffffff" opacity="0.05"/>
+    </pattern>
     <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur stdDeviation="60"/>
     </filter>
@@ -23,21 +29,28 @@
   </defs>
 
   <rect width="1200" height="360" rx="24" fill="url(#bg)"/>
-  <circle cx="150" cy="330" r="150" fill="#ff2d20" opacity="0.22" filter="url(#glow)"/>
-  <circle cx="1080" cy="40" r="160" fill="#8b5cf6" opacity="0.25" filter="url(#glow)"/>
-  <circle cx="700" cy="380" r="120" fill="#34d399" opacity="0.12" filter="url(#glow)"/>
+  <rect width="1200" height="360" rx="24" fill="url(#dots)"/>
+  <circle cx="150" cy="330" r="150" fill="#ff2d20" opacity="0.20" filter="url(#glow)"/>
+  <circle cx="1080" cy="40" r="160" fill="#8b5cf6" opacity="0.24" filter="url(#glow)"/>
+  <circle cx="700" cy="390" r="120" fill="#34d399" opacity="0.10" filter="url(#glow)"/>
 
   <g filter="url(#soft)">
     <rect x="80" y="80" width="200" height="200" rx="44" fill="url(#tile)"/>
   </g>
-  <g transform="translate(108 112) scale(6)" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="80" y="80" width="200" height="200" rx="44" fill="url(#shine)"/>
+  <g transform="translate(108 110) scale(6)" stroke="#ffffff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="8" cy="21" r="1.1"/>
     <circle cx="19" cy="21" r="1.1"/>
     <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
   </g>
 
-  <text x="340" y="150" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="68" font-weight="800" fill="#ffffff" letter-spacing="-1">Simple Cart</text>
-  <text x="340" y="196" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="25" fill="#c7d2fe">Simple by design, not by capability - one core, zero migrations</text>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14">
+    <rect x="744" y="42" width="376" height="36" rx="18" fill="#0b1120" fill-opacity="0.8" stroke="#334155"/>
+    <text x="762" y="65" fill="#94a3b8">composer require timurturdyev/simple-cart</text>
+  </g>
+
+  <text x="340" y="150" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="72" font-weight="800" fill="url(#title)" letter-spacing="-1.5">Simple Cart</text>
+  <text x="340" y="196" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="24" fill="#a5b4fc">Simple by design, not by capability - one core, zero migrations</text>
 
   <g font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="19" font-weight="600">
     <rect x="340" y="226" width="150" height="44" rx="22" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.18"/>
@@ -70,15 +83,28 @@
     <text x="994" y="254" fill="#e2e8f0">Laravel 12+</text>
   </g>
 
-  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17">
-    <line x1="340" y1="312" x2="1120" y2="312" stroke="url(#line)" stroke-width="2" stroke-dasharray="2 6" opacity="0.8"/>
-    <rect x="340" y="296" width="104" height="32" rx="16" fill="#0f172a" stroke="#475569"/>
-    <text x="360" y="317" fill="#94a3b8">subtotal</text>
-    <rect x="586" y="296" width="130" height="32" rx="16" fill="#0f172a" stroke="#7c3aed"/>
-    <text x="606" y="317" fill="#c4b5fd">discounts</text>
-    <rect x="858" y="296" width="112" height="32" rx="16" fill="#0f172a" stroke="#0ea5e9"/>
-    <text x="878" y="317" fill="#7dd3fc">shipping</text>
-    <rect x="1040" y="296" width="80" height="32" rx="16" fill="#064e3b" stroke="#34d399"/>
-    <text x="1060" y="317" fill="#6ee7b7">total</text>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16">
+    <text x="1086" y="286" text-anchor="end" fill="#64748b" font-size="14">totals()-&gt;breakdown()</text>
+
+    <rect x="340" y="296" width="166" height="32" rx="16" fill="#0f172a" stroke="#475569"/>
+    <text x="363" y="317" fill="#94a3b8">subtotal 59.98</text>
+
+    <path d="M514 312h20" stroke="#64748b" stroke-width="2"/>
+    <path d="m530 306 8 6-8 6" stroke="#64748b" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="548" y="296" width="148" height="32" rx="16" fill="#0f172a" stroke="#7c3aed"/>
+    <text x="568" y="317" fill="#c4b5fd">-6.00 summer</text>
+
+    <path d="M704 312h20" stroke="#64748b" stroke-width="2"/>
+    <path d="m720 306 8 6-8 6" stroke="#64748b" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="738" y="296" width="166" height="32" rx="16" fill="#0f172a" stroke="#0ea5e9"/>
+    <text x="758" y="317" fill="#7dd3fc">+5.00 shipping</text>
+
+    <path d="M912 312h20" stroke="#64748b" stroke-width="2"/>
+    <path d="m928 306 8 6-8 6" stroke="#64748b" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="946" y="296" width="140" height="32" rx="16" fill="#064e3b" stroke="#34d399"/>
+    <text x="968" y="317" fill="#6ee7b7">total 58.98</text>
   </g>
 </svg>
