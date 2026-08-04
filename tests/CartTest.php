@@ -14,6 +14,7 @@ use TimurTurdyev\SimpleCart\Exceptions\InvalidAdjusterException;
 use TimurTurdyev\SimpleCart\Exceptions\UnknownLineException;
 use TimurTurdyev\SimpleCart\Line;
 use TimurTurdyev\SimpleCart\ListPolicy;
+use TimurTurdyev\SimpleCart\MergeStrategy;
 use TimurTurdyev\SimpleCart\Support\Price;
 use TimurTurdyev\SimpleCart\Support\Totals;
 
@@ -38,6 +39,29 @@ final class CartTest extends TestCase
         $cart = Cart::make()->add($line)->setQuantity($line->id, 5);
 
         $this->assertSame(5, $cart->totalQuantity());
+    }
+
+    public function test_set_quantity_keeps_line_position(): void
+    {
+        $first = $this->line(1);
+        $second = $this->line(2);
+
+        $cart = Cart::make()->add($first)->add($second)->setQuantity($first->id, 5);
+
+        $this->assertSame([$first->id, $second->id], $cart->items()->keys()->all());
+    }
+
+    public function test_merge_skips_lines_over_limit(): void
+    {
+        $policy = new ListPolicy(limit: 1);
+
+        $user = Cart::make($policy)->add($this->line(1));
+        $guest = Cart::make($policy)->add($this->line(2));
+
+        $merged = $user->merge($guest, MergeStrategy::Sum);
+
+        $this->assertSame(1, $merged->count());
+        $this->assertTrue($merged->has($this->line(1)->id));
     }
 
     public function test_set_quantity_below_one_removes_line(): void

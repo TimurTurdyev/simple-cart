@@ -58,6 +58,11 @@ final readonly class ItemList
         return $this->put($line);
     }
 
+    public function replace(Line $line): self
+    {
+        return $this->put($line);
+    }
+
     public function remove(string $id): self
     {
         if (! isset($this->lines[$id])) {
