@@ -3,6 +3,13 @@
 All notable changes to this package are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.1.0] - 2026-08-04
+
+### Added
+
+- Memoized model resolution: repeated `Line::model()` calls on the same line hit the database once; the result (including a miss) is remembered in a `WeakMap` for the lifetime of the line instance.
+- Batch hydration: `ManagedList::models()` loads models for every line with one `findMany()` per purchasable type, primes the memoization and returns a collection keyed by line id.
+
 ## [2.0.0] - 2026-08-04
 
 ### Added
