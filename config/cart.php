@@ -7,6 +7,19 @@ return [
     // Storage driver: session, database or a custom driver registered via extend().
     'storage' => env('CART_STORAGE', 'session'),
 
+    // How the current visitor's cart id is resolved: session (default), cookie
+    // or a custom driver registered via IdentityManager::extend().
+    // The cookie driver queues the cookie lazily - only when the visitor
+    // actually writes to a list for the first time. Cookie encryption is up to
+    // the application middleware (EncryptCookies).
+    'identity' => [
+        'driver' => env('CART_IDENTITY', 'session'),
+        'cookie' => [
+            'name' => env('CART_COOKIE', 'cart_id'),
+            'ttl_minutes' => 60 * 24 * 30,
+        ],
+    ],
+
     // Named item lists and their policies.
     // policy: append (quantities accumulate) or toggle (add/remove on repeat).
     // limit: optional maximum number of lines.
@@ -20,6 +33,17 @@ return [
     'database' => [
         'table' => 'cart_lists',
         'connection' => null,
+    ],
+
+    // Write-through cache layer wrapped around the active storage driver,
+    // including custom drivers registered via extend(). One cache key per
+    // cart: <prefix><owner id> holds every list of that visitor.
+    // store: cache store name (null - the default store).
+    'cache' => [
+        'enabled' => false,
+        'store' => null,
+        'ttl_minutes' => 60 * 24 * 30,
+        'prefix' => 'cart_',
     ],
 
     // Merge the guest cart into the user cart on login (database driver only).
