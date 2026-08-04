@@ -1,8 +1,10 @@
 # Upgrade Guide
 
-## From 1.0 to 1.1
+## From 1.0 to 2.0
 
-- The package is renamed: require `timurturdyev/simple-cart` instead of `timurturdyev/laravel-cart` and change the namespace prefix `TimurTurdyev\Cart` to `TimurTurdyev\SimpleCart` in your imports and published config. Everything else keeps its name.
+- The package is renamed: require `timurturdyev/simple-cart` instead of `timurturdyev/laravel-cart` and change the namespace prefix `TimurTurdyev\Cart` to `TimurTurdyev\SimpleCart` in your imports.
+- The config follows: rename the published `config/cart.php` to `config/simple_cart.php` (the key is `simple_cart` now), re-run `vendor:publish` with the `simple-cart-config` / `simple-cart-migrations` tags, and rename the `cart_lists` table to `simple_cart_lists` (or republish the migration). The cookie default is `simple_cart_id`, its env name is `SIMPLE_CART_COOKIE`.
+- `ManagedList::withoutAdjuster()` (the facade-level call) is now `removeAdjuster()`; the immutable `Cart::withoutAdjuster()` in the core keeps its name.
 - `Storage\DatabaseStorage` is now constructed with a `Contracts\CartIdentity` instead of an owner `Closure`. The driver is wired by `StorageManager`, so this only affects code instantiating `DatabaseStorage` directly - wrap your owner resolution into a `CartIdentity` (see `Identity\FixedIdentity`).
 - The `cart:import-legacy` command and the public `Legacy\LegacyImporter` class are removed. Data migration is an application-side one-off script now: build the new payload and write it for an explicit owner via `forOwner()` (see [Data migration](#data-migration) below).
 - New config sections `identity` and `cache` ship with backwards-compatible defaults (`identity.driver=session`, `cache.enabled=false`); published configs keep working without changes.
