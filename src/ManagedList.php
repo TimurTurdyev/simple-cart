@@ -38,8 +38,14 @@ final class ManagedList
     public function add(Purchasable|Line $item, int $quantity = 1, array $options = [], array $meta = []): Line
     {
         $line = $this->line($item, $quantity, $options, $meta);
+        $before = $this->state();
+        $state = $before->add($line);
 
-        $this->mutate($this->state()->add($line));
+        if ($state->list === $before->list) {
+            return $before->get($line->id);
+        }
+
+        $this->mutate($state);
 
         $added = $this->get($line->id);
         $this->dispatch(new LineAdded($this->name, $added));
@@ -137,7 +143,7 @@ final class ManagedList
         $this->mutate($this->state()->adjust(...$adjusters));
     }
 
-    public function withoutAdjuster(string $name): void
+    public function removeAdjuster(string $name): void
     {
         $this->mutate($this->state()->withoutAdjuster($name));
     }

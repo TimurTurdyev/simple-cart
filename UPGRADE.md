@@ -32,7 +32,7 @@ This package is a clean rewrite, not a drop-in replacement. The ideas differ in 
 | `Cart::isEmpty()` | `Cart::isEmpty()` |
 | `Cart::clear()` | `Cart::clear()` |
 | `Cart::condition(new CartCondition([... 'value' => '-10%']))` | `Cart::adjust(new PercentageDiscount('sale', 10))` |
-| `Cart::removeCartCondition($name)` | `Cart::withoutAdjuster($name)` |
+| `Cart::removeCartCondition($name)` | `Cart::removeAdjuster($name)` |
 | `Cart::getConditions()` | `Cart::adjusters()` / `Cart::totals()->breakdown()` |
 | `Cart::instance('wishlist')` | `Wishlist::` facade or `app(CartManager::class)->list('wishlist')` |
 | `$item->attributes['color']` | `$line->option('color')` (identity) or `$line->meta('color')` (metadata) |
