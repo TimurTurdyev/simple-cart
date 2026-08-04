@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TimurTurdyev\SimpleCart\Adjusters;
 
 use TimurTurdyev\SimpleCart\Contracts\Adjuster;
-use TimurTurdyev\SimpleCart\Exceptions\InvalidAdjusterException;
+use TimurTurdyev\SimpleCart\Support\AdjusterPayload;
 use TimurTurdyev\SimpleCart\Support\Price;
 use TimurTurdyev\SimpleCart\Support\Totals;
 
@@ -34,20 +34,9 @@ final readonly class Shipping implements Adjuster
 
     public static function fromArray(array $data): static
     {
-        if (! array_key_exists('amount', $data)) {
-            throw InvalidAdjusterException::missingKey(self::class, 'amount');
-        }
-
-        if (! is_int($data['amount'])) {
-            throw InvalidAdjusterException::invalidValue(self::class, 'amount');
-        }
-
-        $name = $data['name'] ?? 'shipping';
-
-        if (! is_string($name)) {
-            throw InvalidAdjusterException::invalidValue(self::class, 'name');
-        }
-
-        return new self(Price::fromMinor($data['amount']), $name);
+        return new self(
+            Price::fromMinor(AdjusterPayload::int(self::class, $data, 'amount')),
+            AdjusterPayload::stringOr(self::class, $data, 'name', 'shipping'),
+        );
     }
 }
