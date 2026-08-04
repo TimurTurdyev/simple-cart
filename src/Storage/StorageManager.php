@@ -14,25 +14,25 @@ final class StorageManager extends Manager
 {
     public function getDefaultDriver(): string
     {
-        return $this->config->get('cart.storage', 'session');
+        return $this->config->get('simple_cart.storage', 'session');
     }
 
     protected function createDriver($driver)
     {
         $storage = parent::createDriver($driver);
 
-        if (! $this->config->get('cart.cache.enabled')) {
+        if (! $this->config->get('simple_cart.cache.enabled')) {
             return $storage;
         }
 
-        $config = $this->config->get('cart.cache', []);
+        $config = $this->config->get('simple_cart.cache', []);
 
         return new CachedStorage(
             inner: $storage,
             identity: $this->ownerIdentity(),
             cache: $this->container->make('cache')->store($config['store'] ?? null),
             ttlMinutes: (int) ($config['ttl_minutes'] ?? 60 * 24 * 30),
-            prefix: (string) ($config['prefix'] ?? 'cart_'),
+            prefix: (string) ($config['prefix'] ?? 'simple_cart_'),
         );
     }
 

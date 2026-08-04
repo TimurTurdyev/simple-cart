@@ -31,13 +31,13 @@ final readonly class MergeGuestCart
 
         $policies = array_map(
             ListPolicy::fromConfig(...),
-            $this->config->get('cart.lists', []),
+            $this->config->get('simple_cart.lists', []),
         );
 
         $driver->mergeOwners(
             from: $this->identity->driver()->id(),
             to: (string) $event->user->getAuthIdentifier(),
-            strategy: MergeStrategy::from($this->config->get('cart.merge.strategy', 'sum')),
+            strategy: MergeStrategy::from($this->config->get('simple_cart.merge.strategy', 'sum')),
             policies: $policies,
         );
     }

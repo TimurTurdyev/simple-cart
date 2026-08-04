@@ -11,7 +11,7 @@ final class IdentityManager extends Manager
 {
     public function getDefaultDriver(): string
     {
-        return $this->config->get('cart.identity.driver', 'session');
+        return $this->config->get('simple_cart.identity.driver', 'session');
     }
 
     protected function createSessionDriver(): CartIdentity
@@ -21,8 +21,8 @@ final class IdentityManager extends Manager
 
     protected function createCookieDriver(): CartIdentity
     {
-        $config = $this->config->get('cart.identity.cookie', []);
-        $name = (string) ($config['name'] ?? 'cart_id');
+        $config = $this->config->get('simple_cart.identity.cookie', []);
+        $name = (string) ($config['name'] ?? 'simple_cart_id');
 
         return new CookieIdentity(
             cookies: $this->container->make('cookie'),

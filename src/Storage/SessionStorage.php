@@ -11,7 +11,7 @@ final readonly class SessionStorage implements Storage
 {
     public function __construct(
         private Session $session,
-        private string $prefix = 'cart',
+        private string $prefix = 'simple_cart',
     ) {
     }
 

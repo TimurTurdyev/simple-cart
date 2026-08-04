@@ -1,4 +1,4 @@
-# --- Makefile for timurturdyev/laravel-cart (Laravel package) ---
+# --- Makefile for timurturdyev/simple-cart (Laravel package) ---
 # Usage: make [target]
 
 SHELL := bash
@@ -9,7 +9,7 @@ MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 # --- Project ---
-PROJECT  ?= laravel-cart
+PROJECT  ?= simple-cart
 PHP      ?= php
 COMPOSER ?= composer
 PHPUNIT  ?= ./vendor/bin/phpunit

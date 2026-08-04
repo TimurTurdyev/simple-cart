@@ -27,7 +27,7 @@ final class IdentityManagerTest extends TestCase
 
     public function test_cookie_driver_from_config(): void
     {
-        config()->set('cart.identity.driver', 'cookie');
+        config()->set('simple_cart.identity.driver', 'cookie');
 
         $manager = $this->app->make(IdentityManager::class);
 
@@ -48,7 +48,7 @@ final class IdentityManagerTest extends TestCase
             }
         };
 
-        config()->set('cart.identity.driver', 'custom');
+        config()->set('simple_cart.identity.driver', 'custom');
 
         $manager = $this->app->make(IdentityManager::class);
         $manager->extend('custom', fn (): CartIdentity => $custom);
@@ -59,7 +59,7 @@ final class IdentityManagerTest extends TestCase
 
     public function test_unknown_driver_fails(): void
     {
-        config()->set('cart.identity.driver', 'missing');
+        config()->set('simple_cart.identity.driver', 'missing');
 
         $this->expectException(InvalidArgumentException::class);
 

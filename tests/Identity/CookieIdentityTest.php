@@ -17,8 +17,8 @@ final class CookieIdentityTest extends TestCase
     protected function defineEnvironment($app): void
     {
         $app['config']->set('database.default', 'testing');
-        $app['config']->set('cart.storage', 'database');
-        $app['config']->set('cart.identity.driver', 'cookie');
+        $app['config']->set('simple_cart.storage', 'database');
+        $app['config']->set('simple_cart.identity.driver', 'cookie');
     }
 
     protected function defineDatabaseMigrations(): void
@@ -50,7 +50,7 @@ final class CookieIdentityTest extends TestCase
 
         $identity->persist();
 
-        $queued = $jar->queued('cart_id');
+        $queued = $jar->queued('simple_cart_id');
 
         $this->assertNotNull($queued);
         $this->assertSame($identity->id(), $queued->getValue());
@@ -75,11 +75,11 @@ final class CookieIdentityTest extends TestCase
 
         $list->items();
 
-        $this->assertNull($jar->queued('cart_id'));
+        $this->assertNull($jar->queued('simple_cart_id'));
 
         $list->add(new FakeProduct(price: 500));
 
-        $queued = $jar->queued('cart_id');
+        $queued = $jar->queued('simple_cart_id');
 
         $this->assertNotNull($queued);
         $this->assertSame(1, CartRecord::query()->where('owner', $queued->getValue())->count());
@@ -90,7 +90,7 @@ final class CookieIdentityTest extends TestCase
         return new CookieIdentity(
             cookies: $jar ?? $this->app->make('cookie'),
             cookieValue: $cookieValue,
-            name: 'cart_id',
+            name: 'simple_cart_id',
             ttlMinutes: 60 * 24 * 30,
         );
     }

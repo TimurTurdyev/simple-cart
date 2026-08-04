@@ -46,7 +46,7 @@ final class StorageManagerTest extends TestCase
             }
         };
 
-        config()->set('cart.storage', 'custom');
+        config()->set('simple_cart.storage', 'custom');
 
         $manager = $this->app->make(StorageManager::class);
         $manager->extend('custom', fn (): Storage => $custom);
@@ -57,7 +57,7 @@ final class StorageManagerTest extends TestCase
 
     public function test_unknown_driver_fails(): void
     {
-        config()->set('cart.storage', 'missing');
+        config()->set('simple_cart.storage', 'missing');
 
         $this->expectException(InvalidArgumentException::class);
 

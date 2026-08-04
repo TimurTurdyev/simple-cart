@@ -19,7 +19,7 @@ final class MergeGuestCartTest extends TestCase
     {
         $app['config']->set('database.default', 'testing');
         $app['config']->set('session.driver', 'array');
-        $app['config']->set('cart.storage', 'database');
+        $app['config']->set('simple_cart.storage', 'database');
     }
 
     protected function defineDatabaseMigrations(): void
@@ -46,7 +46,7 @@ final class MergeGuestCartTest extends TestCase
 
     public function test_login_is_silent_for_session_driver(): void
     {
-        config()->set('cart.storage', 'session');
+        config()->set('simple_cart.storage', 'session');
 
         $this->app->make(CartManager::class)->list('cart')->add(new FakeProduct());
 
@@ -57,7 +57,7 @@ final class MergeGuestCartTest extends TestCase
 
     public function test_login_is_silent_for_custom_driver_without_merge_support(): void
     {
-        config()->set('cart.storage', 'custom');
+        config()->set('simple_cart.storage', 'custom');
 
         $custom = new class implements Storage
         {
@@ -90,7 +90,7 @@ final class MergeGuestCartTest extends TestCase
 
     public function test_merge_reaches_database_driver_through_cache_decorator(): void
     {
-        config()->set('cart.cache.enabled', true);
+        config()->set('simple_cart.cache.enabled', true);
 
         $this->app->make(CartManager::class)->list('cart')->add(new FakeProduct(price: 1000), quantity: 2);
 
@@ -103,17 +103,17 @@ final class MergeGuestCartTest extends TestCase
 
         $store = $this->app->make('cache')->store();
 
-        $this->assertNull($store->get('cart_'.$guestOwner));
+        $this->assertNull($store->get('simple_cart_'.$guestOwner));
         $this->assertNull($store->get('cart_42'));
     }
 
     public function test_merge_uses_cookie_identity_as_guest_owner(): void
     {
-        config()->set('cart.identity.driver', 'cookie');
+        config()->set('simple_cart.identity.driver', 'cookie');
 
         $this->app->make(CartManager::class)->list('cart')->add(new FakeProduct(price: 1000), quantity: 2);
 
-        $guestOwner = $this->app->make('cookie')->queued('cart_id')?->getValue();
+        $guestOwner = $this->app->make('cookie')->queued('simple_cart_id')?->getValue();
 
         $this->assertNotNull($guestOwner);
         $this->assertSame(1, CartRecord::query()->where('owner', $guestOwner)->count());
@@ -139,6 +139,6 @@ final class MergeGuestCartTest extends TestCase
 
     protected function usesDisabledMerge($app): void
     {
-        $app['config']->set('cart.merge.enabled', false);
+        $app['config']->set('simple_cart.merge.enabled', false);
     }
 }
