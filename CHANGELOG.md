@@ -3,6 +3,18 @@
 All notable changes to this package are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.2.0] - 2026-08-05
+
+### Added
+
+- `InvalidAdjusterException::missingKey()`, `invalidValue()` and `malformedEntry()`, `InvalidLineException::invalidValue()` and `invalidPayload()` factories for payload validation errors.
+
+### Fixed
+
+- Built-in adjusters validate their payload in `fromArray()`: a malformed record from storage now throws a domain `InvalidAdjusterException` instead of a fatal `TypeError`; a garbage `percent` value no longer silently collapses to a zero discount. The `name` key of `Shipping` is optional and defaults to `shipping`, matching the constructor.
+- `Line::fromArray()` validates value types, `Cart::fromArray()` validates the shape of the `lines` and `adjusters` sections and of every adjuster entry: same domain exceptions instead of `TypeError`.
+- `PercentageFee` is covered by tests, including the serialization roundtrip.
+
 ## [2.1.0] - 2026-08-04
 
 ### Added
