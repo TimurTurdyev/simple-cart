@@ -25,7 +25,7 @@ final class CookieIdentity implements CartIdentity
 
     public function id(): string
     {
-        return $this->id ??= ($this->cookieValue)() ?? bin2hex(random_bytes(16));
+        return $this->id ??= $this->readCookie() ?? bin2hex(random_bytes(16));
     }
 
     public function persist(): void
@@ -35,6 +35,13 @@ final class CookieIdentity implements CartIdentity
         }
 
         $this->cookies->queue($this->name, $this->id(), $this->ttlMinutes);
+    }
+
+    private function readCookie(): ?string
+    {
+        $value = ($this->cookieValue)();
+
+        return is_string($value) && preg_match('/^[0-9a-f]{32}$/', $value) === 1 ? $value : null;
     }
 
     private function hasQueued(): bool
