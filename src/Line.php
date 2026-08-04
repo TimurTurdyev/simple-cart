@@ -106,7 +106,9 @@ final readonly class Line
 
     public function model(): ?object
     {
-        if ($this->purchasableType === null || ! class_exists($this->purchasableType)) {
+        if ($this->purchasableType === null
+            || ! class_exists($this->purchasableType)
+            || ! method_exists($this->purchasableType, 'query')) {
             return null;
         }
 
@@ -129,6 +131,12 @@ final readonly class Line
 
     public static function fromArray(array $data): self
     {
+        foreach (['id', 'purchasable_id', 'name', 'price', 'quantity'] as $key) {
+            if (! array_key_exists($key, $data)) {
+                throw InvalidLineException::missingKey($key);
+            }
+        }
+
         return new self(
             id: $data['id'],
             purchasableId: $data['purchasable_id'],

@@ -117,6 +117,13 @@ final class LineTest extends TestCase
         Line::of(1, '  ', Price::fromMinor(100));
     }
 
+    public function test_from_array_rejects_missing_keys(): void
+    {
+        $this->expectException(InvalidLineException::class);
+
+        Line::fromArray(['id' => 'abc', 'name' => 'Item']);
+    }
+
     public function test_rejects_zero_quantity(): void
     {
         $this->expectException(InvalidLineException::class);
