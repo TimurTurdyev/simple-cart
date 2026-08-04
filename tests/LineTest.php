@@ -117,6 +117,18 @@ final class LineTest extends TestCase
         Line::of(1, '  ', Price::fromMinor(100));
     }
 
+    public function test_model_is_resolved_once_per_line(): void
+    {
+        \TimurTurdyev\SimpleCart\Tests\Fixtures\FakeModel::resetQueries();
+
+        $line = Line::of(7, 'Item', Price::fromMinor(100), purchasableType: \TimurTurdyev\SimpleCart\Tests\Fixtures\FakeModel::class);
+
+        $line->model();
+        $line->model();
+
+        $this->assertSame(1, \TimurTurdyev\SimpleCart\Tests\Fixtures\FakeModel::$queries);
+    }
+
     public function test_from_array_rejects_missing_keys(): void
     {
         $this->expectException(InvalidLineException::class);
