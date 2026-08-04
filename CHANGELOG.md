@@ -3,6 +3,12 @@
 All notable changes to this package are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.2.1] - 2026-08-05
+
+### Changed
+
+- Payload checks of the built-in adjusters are extracted into the internal `AdjusterPayload` helper; each `fromArray()` is a plain constructor call again. Behavior and exceptions are unchanged.
+
 ## [2.2.0] - 2026-08-05
 
 ### Added
