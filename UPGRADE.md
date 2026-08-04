@@ -2,6 +2,7 @@
 
 ## From 1.0 to 1.1
 
+- The package is renamed: require `timurturdyev/simple-cart` instead of `timurturdyev/laravel-cart` and change the namespace prefix `TimurTurdyev\Cart` to `TimurTurdyev\SimpleCart` in your imports and published config. Everything else keeps its name.
 - `Storage\DatabaseStorage` is now constructed with a `Contracts\CartIdentity` instead of an owner `Closure`. The driver is wired by `StorageManager`, so this only affects code instantiating `DatabaseStorage` directly - wrap your owner resolution into a `CartIdentity` (see `Identity\FixedIdentity`).
 - The `cart:import-legacy` command and the public `Legacy\LegacyImporter` class are removed. Data migration is an application-side one-off script now: build the new payload and write it for an explicit owner via `forOwner()` (see [Data migration](#data-migration) below).
 - New config sections `identity` and `cache` ship with backwards-compatible defaults (`identity.driver=session`, `cache.enabled=false`); published configs keep working without changes.
@@ -16,7 +17,7 @@ This package is a clean rewrite, not a drop-in replacement. The ideas differ in 
 
 ### API mapping
 
-| darryldecode | laravel-cart |
+| darryldecode | simple-cart |
 |---|---|
 | `Cart::add(['id' => ..., 'name' => ..., 'price' => ..., 'quantity' => ..., 'attributes' => ...])` | `Cart::add($product, quantity: 2, options: [...])` or `Cart::add(Line::of(...))` |
 | `Cart::update($id, ['quantity' => ['relative' => false, 'value' => 5]])` | `Cart::setQuantity($lineId, 5)` |
@@ -61,7 +62,7 @@ The package ships no importer. Convert stored darryldecode carts with a one-off 
 4. Write the payload for the original owner id so live cookies keep finding their carts:
 
 ```php
-use TimurTurdyev\Cart\Storage\StorageManager;
+use TimurTurdyev\SimpleCart\Storage\StorageManager;
 
 app(StorageManager::class)->driver('database')
     ->forOwner($ownerId)
