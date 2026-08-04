@@ -12,7 +12,7 @@ Simple by design, not by capability. Корзина, закладки и сра�
 
 ```bash
 composer require timurturdyev/simple-cart
-php artisan vendor:publish --tag=cart-config   # по желанию
+php artisan vendor:publish --tag=simple-cart-config   # по желанию
 ```
 
 Провайдер подхватывается автоматически через package discovery.
@@ -185,7 +185,7 @@ Wishlist::moveToCart($item);
 ```
 
 ```bash
-php artisan vendor:publish --tag=cart-migrations
+php artisan vendor:publish --tag=simple-cart-migrations
 php artisan migrate
 ```
 
@@ -209,7 +209,7 @@ app(StorageManager::class)->extend('redis', fn () => new RedisCartStorage());
 'identity' => [
     'driver' => 'cookie',
     'cookie' => [
-        'name' => env('CART_COOKIE', 'cart_id'),
+        'name' => env('SIMPLE_CART_COOKIE', 'simple_cart_id'),
         'ttl_minutes' => 60 * 24 * 30,
     ],
 ],
