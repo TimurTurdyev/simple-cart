@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart;
+namespace TimurTurdyev\SimpleCart;
 
 use Illuminate\Support\Collection;
-use TimurTurdyev\Cart\Contracts\Adjuster;
-use TimurTurdyev\Cart\Exceptions\InvalidAdjusterException;
-use TimurTurdyev\Cart\Exceptions\UnknownLineException;
-use TimurTurdyev\Cart\Support\Price;
-use TimurTurdyev\Cart\Support\Totals;
+use TimurTurdyev\SimpleCart\Contracts\Adjuster;
+use TimurTurdyev\SimpleCart\Exceptions\InvalidAdjusterException;
+use TimurTurdyev\SimpleCart\Exceptions\UnknownLineException;
+use TimurTurdyev\SimpleCart\Support\Price;
+use TimurTurdyev\SimpleCart\Support\Totals;
 
 final readonly class Cart
 {

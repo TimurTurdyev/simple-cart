@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests;
+namespace TimurTurdyev\SimpleCart\Tests;
 
-use TimurTurdyev\Cart\Adjusters\PercentageDiscount;
-use TimurTurdyev\Cart\CartManager;
-use TimurTurdyev\Cart\Contracts\Storage;
-use TimurTurdyev\Cart\Exceptions\UnknownLineException;
-use TimurTurdyev\Cart\ManagedList;
-use TimurTurdyev\Cart\Tests\Fixtures\FakeProduct;
+use TimurTurdyev\SimpleCart\Adjusters\PercentageDiscount;
+use TimurTurdyev\SimpleCart\CartManager;
+use TimurTurdyev\SimpleCart\Contracts\Storage;
+use TimurTurdyev\SimpleCart\Exceptions\UnknownLineException;
+use TimurTurdyev\SimpleCart\ManagedList;
+use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
 
 final class ManagedListTest extends TestCase
 {

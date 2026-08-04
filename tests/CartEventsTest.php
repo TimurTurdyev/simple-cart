@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests;
+namespace TimurTurdyev\SimpleCart\Tests;
 
 use Illuminate\Support\Facades\Event;
-use TimurTurdyev\Cart\CartManager;
-use TimurTurdyev\Cart\Events\LineAdded;
-use TimurTurdyev\Cart\Events\LineRemoved;
-use TimurTurdyev\Cart\Events\LineUpdated;
-use TimurTurdyev\Cart\Events\ListCleared;
-use TimurTurdyev\Cart\Tests\Fixtures\FakeProduct;
+use TimurTurdyev\SimpleCart\CartManager;
+use TimurTurdyev\SimpleCart\Events\LineAdded;
+use TimurTurdyev\SimpleCart\Events\LineRemoved;
+use TimurTurdyev\SimpleCart\Events\LineUpdated;
+use TimurTurdyev\SimpleCart\Events\ListCleared;
+use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
 
 final class CartEventsTest extends TestCase
 {

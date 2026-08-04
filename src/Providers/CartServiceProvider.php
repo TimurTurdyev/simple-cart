@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Providers;
+namespace TimurTurdyev\SimpleCart\Providers;
 
 use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
-use TimurTurdyev\Cart\CartManager;
-use TimurTurdyev\Cart\Contracts\CartIdentity;
-use TimurTurdyev\Cart\Contracts\Storage;
-use TimurTurdyev\Cart\Identity\IdentityManager;
-use TimurTurdyev\Cart\Listeners\MergeGuestCart;
-use TimurTurdyev\Cart\ManagedList;
-use TimurTurdyev\Cart\Storage\StorageManager;
+use TimurTurdyev\SimpleCart\CartManager;
+use TimurTurdyev\SimpleCart\Contracts\CartIdentity;
+use TimurTurdyev\SimpleCart\Contracts\Storage;
+use TimurTurdyev\SimpleCart\Identity\IdentityManager;
+use TimurTurdyev\SimpleCart\Listeners\MergeGuestCart;
+use TimurTurdyev\SimpleCart\ManagedList;
+use TimurTurdyev\SimpleCart\Storage\StorageManager;
 
 final class CartServiceProvider extends ServiceProvider
 {

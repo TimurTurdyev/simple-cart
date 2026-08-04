@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests;
+namespace TimurTurdyev\SimpleCart\Tests;
 
 use PHPUnit\Framework\TestCase;
-use TimurTurdyev\Cart\Adjusters\FixedDiscount;
-use TimurTurdyev\Cart\Adjusters\PercentageDiscount;
-use TimurTurdyev\Cart\Adjusters\Shipping;
-use TimurTurdyev\Cart\Cart;
-use TimurTurdyev\Cart\Contracts\Adjuster;
-use TimurTurdyev\Cart\Exceptions\InvalidAdjusterException;
-use TimurTurdyev\Cart\Exceptions\UnknownLineException;
-use TimurTurdyev\Cart\Line;
-use TimurTurdyev\Cart\ListPolicy;
-use TimurTurdyev\Cart\Support\Price;
-use TimurTurdyev\Cart\Support\Totals;
+use TimurTurdyev\SimpleCart\Adjusters\FixedDiscount;
+use TimurTurdyev\SimpleCart\Adjusters\PercentageDiscount;
+use TimurTurdyev\SimpleCart\Adjusters\Shipping;
+use TimurTurdyev\SimpleCart\Cart;
+use TimurTurdyev\SimpleCart\Contracts\Adjuster;
+use TimurTurdyev\SimpleCart\Exceptions\InvalidAdjusterException;
+use TimurTurdyev\SimpleCart\Exceptions\UnknownLineException;
+use TimurTurdyev\SimpleCart\Line;
+use TimurTurdyev\SimpleCart\ListPolicy;
+use TimurTurdyev\SimpleCart\Support\Price;
+use TimurTurdyev\SimpleCart\Support\Totals;
 
 final class CartTest extends TestCase
 {

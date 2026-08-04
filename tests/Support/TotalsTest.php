@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests\Support;
+namespace TimurTurdyev\SimpleCart\Tests\Support;
 
 use PHPUnit\Framework\TestCase;
-use TimurTurdyev\Cart\Support\Price;
-use TimurTurdyev\Cart\Support\Totals;
+use TimurTurdyev\SimpleCart\Support\Price;
+use TimurTurdyev\SimpleCart\Support\Totals;
 
 final class TotalsTest extends TestCase
 {

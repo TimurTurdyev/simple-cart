@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests\Identity;
+namespace TimurTurdyev\SimpleCart\Tests\Identity;
 
 use InvalidArgumentException;
-use TimurTurdyev\Cart\Contracts\CartIdentity;
-use TimurTurdyev\Cart\Identity\CookieIdentity;
-use TimurTurdyev\Cart\Identity\IdentityManager;
-use TimurTurdyev\Cart\Identity\SessionIdentity;
-use TimurTurdyev\Cart\Tests\TestCase;
+use TimurTurdyev\SimpleCart\Contracts\CartIdentity;
+use TimurTurdyev\SimpleCart\Identity\CookieIdentity;
+use TimurTurdyev\SimpleCart\Identity\IdentityManager;
+use TimurTurdyev\SimpleCart\Identity\SessionIdentity;
+use TimurTurdyev\SimpleCart\Tests\TestCase;
 
 final class IdentityManagerTest extends TestCase
 {

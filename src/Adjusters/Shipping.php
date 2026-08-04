@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Adjusters;
+namespace TimurTurdyev\SimpleCart\Adjusters;
 
-use TimurTurdyev\Cart\Contracts\Adjuster;
-use TimurTurdyev\Cart\Support\Price;
-use TimurTurdyev\Cart\Support\Totals;
+use TimurTurdyev\SimpleCart\Contracts\Adjuster;
+use TimurTurdyev\SimpleCart\Support\Price;
+use TimurTurdyev\SimpleCart\Support\Totals;
 
 final readonly class Shipping implements Adjuster
 {

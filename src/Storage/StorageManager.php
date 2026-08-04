@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Storage;
+namespace TimurTurdyev\SimpleCart\Storage;
 
 use Illuminate\Support\Manager;
-use TimurTurdyev\Cart\Contracts\CartIdentity;
-use TimurTurdyev\Cart\Contracts\Storage;
-use TimurTurdyev\Cart\Identity\AuthAwareIdentity;
-use TimurTurdyev\Cart\Identity\IdentityManager;
+use TimurTurdyev\SimpleCart\Contracts\CartIdentity;
+use TimurTurdyev\SimpleCart\Contracts\Storage;
+use TimurTurdyev\SimpleCart\Identity\AuthAwareIdentity;
+use TimurTurdyev\SimpleCart\Identity\IdentityManager;
 
 final class StorageManager extends Manager
 {

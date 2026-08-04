@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Identity;
+namespace TimurTurdyev\SimpleCart\Identity;
 
 use Illuminate\Support\Manager;
-use TimurTurdyev\Cart\Contracts\CartIdentity;
+use TimurTurdyev\SimpleCart\Contracts\CartIdentity;
 
 final class IdentityManager extends Manager
 {

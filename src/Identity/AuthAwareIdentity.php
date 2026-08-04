@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Identity;
+namespace TimurTurdyev\SimpleCart\Identity;
 
 use Closure;
-use TimurTurdyev\Cart\Contracts\CartIdentity;
+use TimurTurdyev\SimpleCart\Contracts\CartIdentity;
 
 final readonly class AuthAwareIdentity implements CartIdentity
 {

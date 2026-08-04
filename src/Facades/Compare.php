@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Facades;
+namespace TimurTurdyev\SimpleCart\Facades;
 
 use Illuminate\Support\Facades\Facade;
-use TimurTurdyev\Cart\ManagedList;
+use TimurTurdyev\SimpleCart\ManagedList;
 
 /**
  * @mixin ManagedList

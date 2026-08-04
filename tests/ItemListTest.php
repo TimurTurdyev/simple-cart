@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests;
+namespace TimurTurdyev\SimpleCart\Tests;
 
 use PHPUnit\Framework\TestCase;
-use TimurTurdyev\Cart\Exceptions\ListLimitException;
-use TimurTurdyev\Cart\ItemList;
-use TimurTurdyev\Cart\Line;
-use TimurTurdyev\Cart\ListMode;
-use TimurTurdyev\Cart\ListPolicy;
-use TimurTurdyev\Cart\Support\Price;
+use TimurTurdyev\SimpleCart\Exceptions\ListLimitException;
+use TimurTurdyev\SimpleCart\ItemList;
+use TimurTurdyev\SimpleCart\Line;
+use TimurTurdyev\SimpleCart\ListMode;
+use TimurTurdyev\SimpleCart\ListPolicy;
+use TimurTurdyev\SimpleCart\Support\Price;
 
 final class ItemListTest extends TestCase
 {

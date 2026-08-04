@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests\Identity;
+namespace TimurTurdyev\SimpleCart\Tests\Identity;
 
-use TimurTurdyev\Cart\Identity\SessionIdentity;
-use TimurTurdyev\Cart\Tests\TestCase;
+use TimurTurdyev\SimpleCart\Identity\SessionIdentity;
+use TimurTurdyev\SimpleCart\Tests\TestCase;
 
 final class SessionIdentityTest extends TestCase
 {

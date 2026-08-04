@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests\Support;
+namespace TimurTurdyev\SimpleCart\Tests\Support;
 
 use PHPUnit\Framework\TestCase;
-use TimurTurdyev\Cart\Exceptions\InvalidPriceException;
-use TimurTurdyev\Cart\Support\Price;
+use TimurTurdyev\SimpleCart\Exceptions\InvalidPriceException;
+use TimurTurdyev\SimpleCart\Support\Price;
 
 final class PriceTest extends TestCase
 {

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests;
+namespace TimurTurdyev\SimpleCart\Tests;
 
 use PHPUnit\Framework\TestCase;
-use TimurTurdyev\Cart\Exceptions\InvalidLineException;
-use TimurTurdyev\Cart\Line;
-use TimurTurdyev\Cart\Support\Price;
-use TimurTurdyev\Cart\Tests\Fixtures\FakeProduct;
+use TimurTurdyev\SimpleCart\Exceptions\InvalidLineException;
+use TimurTurdyev\SimpleCart\Line;
+use TimurTurdyev\SimpleCart\Support\Price;
+use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
 
 final class LineTest extends TestCase
 {
@@ -100,11 +100,11 @@ final class LineTest extends TestCase
 
     public function test_model_resolution(): void
     {
-        $line = Line::of(7, 'Item', Price::fromMinor(100), purchasableType: \TimurTurdyev\Cart\Tests\Fixtures\FakeModel::class);
+        $line = Line::of(7, 'Item', Price::fromMinor(100), purchasableType: \TimurTurdyev\SimpleCart\Tests\Fixtures\FakeModel::class);
 
         $model = $line->model();
 
-        $this->assertInstanceOf(\TimurTurdyev\Cart\Tests\Fixtures\FakeModel::class, $model);
+        $this->assertInstanceOf(\TimurTurdyev\SimpleCart\Tests\Fixtures\FakeModel::class, $model);
         $this->assertSame(7, $model->id);
         $this->assertNull(Line::of(7, 'Item', Price::fromMinor(100))->model());
         $this->assertNull(Line::of(7, 'Item', Price::fromMinor(100), purchasableType: 'App\\Missing')->model());

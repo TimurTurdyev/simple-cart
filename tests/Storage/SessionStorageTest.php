@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests\Storage;
+namespace TimurTurdyev\SimpleCart\Tests\Storage;
 
-use TimurTurdyev\Cart\Storage\SessionStorage;
-use TimurTurdyev\Cart\Tests\TestCase;
+use TimurTurdyev\SimpleCart\Storage\SessionStorage;
+use TimurTurdyev\SimpleCart\Tests\TestCase;
 
 final class SessionStorageTest extends TestCase
 {

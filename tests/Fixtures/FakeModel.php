@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests\Fixtures;
+namespace TimurTurdyev\SimpleCart\Tests\Fixtures;
 
 final class FakeModel
 {

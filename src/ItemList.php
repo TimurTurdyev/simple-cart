@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart;
+namespace TimurTurdyev\SimpleCart;
 
 use Illuminate\Support\Collection;
-use TimurTurdyev\Cart\Exceptions\ListLimitException;
-use TimurTurdyev\Cart\Support\Price;
+use TimurTurdyev\SimpleCart\Exceptions\ListLimitException;
+use TimurTurdyev\SimpleCart\Support\Price;
 
 final readonly class ItemList
 {

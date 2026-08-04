@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Contracts;
+namespace TimurTurdyev\SimpleCart\Contracts;
 
-use TimurTurdyev\Cart\Support\Price;
+use TimurTurdyev\SimpleCart\Support\Price;
 
 interface Purchasable
 {

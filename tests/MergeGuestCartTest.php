@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests;
+namespace TimurTurdyev\SimpleCart\Tests;
 
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\GenericUser;
 use Orchestra\Testbench\Attributes\DefineEnvironment;
-use TimurTurdyev\Cart\CartManager;
-use TimurTurdyev\Cart\Contracts\Storage;
-use TimurTurdyev\Cart\Storage\CartRecord;
-use TimurTurdyev\Cart\Storage\StorageManager;
-use TimurTurdyev\Cart\Tests\Fixtures\FakeProduct;
+use TimurTurdyev\SimpleCart\CartManager;
+use TimurTurdyev\SimpleCart\Contracts\Storage;
+use TimurTurdyev\SimpleCart\Storage\CartRecord;
+use TimurTurdyev\SimpleCart\Storage\StorageManager;
+use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
 
 final class MergeGuestCartTest extends TestCase
 {

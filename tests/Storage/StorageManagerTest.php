@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests\Storage;
+namespace TimurTurdyev\SimpleCart\Tests\Storage;
 
 use InvalidArgumentException;
-use TimurTurdyev\Cart\Contracts\Storage;
-use TimurTurdyev\Cart\Storage\SessionStorage;
-use TimurTurdyev\Cart\Storage\StorageManager;
-use TimurTurdyev\Cart\Tests\TestCase;
+use TimurTurdyev\SimpleCart\Contracts\Storage;
+use TimurTurdyev\SimpleCart\Storage\SessionStorage;
+use TimurTurdyev\SimpleCart\Storage\StorageManager;
+use TimurTurdyev\SimpleCart\Tests\TestCase;
 
 final class StorageManagerTest extends TestCase
 {

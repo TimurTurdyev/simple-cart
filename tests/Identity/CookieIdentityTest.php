@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests\Identity;
+namespace TimurTurdyev\SimpleCart\Tests\Identity;
 
 use Closure;
 use Illuminate\Contracts\Cookie\QueueingFactory;
-use TimurTurdyev\Cart\CartManager;
-use TimurTurdyev\Cart\Identity\CookieIdentity;
-use TimurTurdyev\Cart\Storage\CartRecord;
-use TimurTurdyev\Cart\Tests\Fixtures\FakeProduct;
-use TimurTurdyev\Cart\Tests\TestCase;
+use TimurTurdyev\SimpleCart\CartManager;
+use TimurTurdyev\SimpleCart\Identity\CookieIdentity;
+use TimurTurdyev\SimpleCart\Storage\CartRecord;
+use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
+use TimurTurdyev\SimpleCart\Tests\TestCase;
 
 final class CookieIdentityTest extends TestCase
 {

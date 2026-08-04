@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Contracts;
+namespace TimurTurdyev\SimpleCart\Contracts;
 
-use TimurTurdyev\Cart\ListPolicy;
-use TimurTurdyev\Cart\MergeStrategy;
+use TimurTurdyev\SimpleCart\ListPolicy;
+use TimurTurdyev\SimpleCart\MergeStrategy;
 
 interface SupportsOwnerMerge
 {

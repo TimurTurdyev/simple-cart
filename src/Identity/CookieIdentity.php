@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Identity;
+namespace TimurTurdyev\SimpleCart\Identity;
 
 use Closure;
 use Illuminate\Contracts\Cookie\QueueingFactory;
-use TimurTurdyev\Cart\Contracts\CartIdentity;
+use TimurTurdyev\SimpleCart\Contracts\CartIdentity;
 
 final class CookieIdentity implements CartIdentity
 {

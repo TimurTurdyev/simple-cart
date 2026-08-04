@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Storage;
+namespace TimurTurdyev\SimpleCart\Storage;
 
 use Illuminate\Database\Eloquent\Model;
 

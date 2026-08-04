@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Tests;
+namespace TimurTurdyev\SimpleCart\Tests;
 
 use PHPUnit\Framework\TestCase;
-use TimurTurdyev\Cart\Adjusters\FixedDiscount;
-use TimurTurdyev\Cart\Adjusters\PercentageDiscount;
-use TimurTurdyev\Cart\Adjusters\Shipping;
-use TimurTurdyev\Cart\Support\Price;
-use TimurTurdyev\Cart\Support\Totals;
+use TimurTurdyev\SimpleCart\Adjusters\FixedDiscount;
+use TimurTurdyev\SimpleCart\Adjusters\PercentageDiscount;
+use TimurTurdyev\SimpleCart\Adjusters\Shipping;
+use TimurTurdyev\SimpleCart\Support\Price;
+use TimurTurdyev\SimpleCart\Support\Totals;
 
 final class AdjustersTest extends TestCase
 {

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Listeners;
+namespace TimurTurdyev\SimpleCart\Listeners;
 
 use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Config\Repository;
-use TimurTurdyev\Cart\Contracts\SupportsOwnerMerge;
-use TimurTurdyev\Cart\Identity\IdentityManager;
-use TimurTurdyev\Cart\ListPolicy;
-use TimurTurdyev\Cart\MergeStrategy;
-use TimurTurdyev\Cart\Storage\StorageManager;
+use TimurTurdyev\SimpleCart\Contracts\SupportsOwnerMerge;
+use TimurTurdyev\SimpleCart\Identity\IdentityManager;
+use TimurTurdyev\SimpleCart\ListPolicy;
+use TimurTurdyev\SimpleCart\MergeStrategy;
+use TimurTurdyev\SimpleCart\Storage\StorageManager;
 
 final readonly class MergeGuestCart
 {

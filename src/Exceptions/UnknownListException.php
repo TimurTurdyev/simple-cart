@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart\Exceptions;
+namespace TimurTurdyev\SimpleCart\Exceptions;
 
 final class UnknownListException extends CartException
 {

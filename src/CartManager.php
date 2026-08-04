@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TimurTurdyev\Cart;
+namespace TimurTurdyev\SimpleCart;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
-use TimurTurdyev\Cart\Contracts\Storage;
-use TimurTurdyev\Cart\Exceptions\UnknownListException;
+use TimurTurdyev\SimpleCart\Contracts\Storage;
+use TimurTurdyev\SimpleCart\Exceptions\UnknownListException;
 
 final class CartManager
 {
