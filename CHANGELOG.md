@@ -3,6 +3,27 @@
 All notable changes to this package are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- Cart identity layer: `CartIdentity` contract, `IdentityManager` with `extend()`, `session` (default) and `cookie` drivers; the cookie is queued lazily on the first real write, so an empty visitor never receives one.
+- `AuthAwareIdentity` owner resolution shared by the database driver and the cache layer: authenticated users are keyed by auth id, guests by the identity driver.
+- Write-through cache layer (`cache.enabled`) wrapped around any storage driver, including custom ones; one cache key holds every list of a cart, so warm reads make zero database queries.
+- `SupportsOwnerMerge` contract gating the guest-cart merge listener; custom drivers without merge support are skipped silently on login.
+- `SupportsOwnerScope` contract with `DatabaseStorage::forOwner()` for writing on behalf of an explicit owner id (bulk imports).
+
+### Changed
+
+- `DatabaseStorage` is constructed with a `CartIdentity` instead of an owner `Closure` (affects direct instantiation only; `StorageManager` wiring is unchanged).
+- The `cart_lists` payload format is documented as a public contract: external applications may read the table directly, and the structure only changes in major versions.
+- `illuminate/auth` is declared as a direct dependency (the `Login` event was used undeclared before).
+- Composer platform is pinned to PHP 8.3 so dev dependencies always resolve against the minimum supported version.
+
+### Removed
+
+- The `cart:import-legacy` command and the public `LegacyImporter` class. Legacy data migration is an application-side script now: build the payload and write it for an explicit owner via `SupportsOwnerScope::forOwner()` (see UPGRADE.md).
+
 ## [1.0.0] - 2026-07-30
 
 ### Added
