@@ -136,6 +136,35 @@ final class LineTest extends TestCase
         Line::fromArray(['id' => 'abc', 'name' => 'Item']);
     }
 
+    public function test_from_array_rejects_garbage_types(): void
+    {
+        $valid = [
+            'id' => 'abc',
+            'purchasable_id' => 1,
+            'name' => 'Item',
+            'price' => 100,
+            'quantity' => 1,
+        ];
+
+        $broken = [
+            ['price' => '100'],
+            ['quantity' => '1'],
+            ['name' => 42],
+            ['id' => 7],
+            ['options' => 'size=m'],
+            ['meta' => 'image'],
+        ];
+
+        foreach ($broken as $overrides) {
+            try {
+                Line::fromArray([...$valid, ...$overrides]);
+                $this->fail('Garbage payload accepted: '.json_encode($overrides));
+            } catch (InvalidLineException $exception) {
+                $this->assertStringContainsString('invalid', $exception->getMessage());
+            }
+        }
+    }
+
     public function test_rejects_zero_quantity(): void
     {
         $this->expectException(InvalidLineException::class);

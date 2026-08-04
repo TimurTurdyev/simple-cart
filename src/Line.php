@@ -145,6 +145,23 @@ final readonly class Line
             }
         }
 
+        $checks = [
+            'id' => is_string($data['id']),
+            'purchasable_id' => is_string($data['purchasable_id']) || is_int($data['purchasable_id']),
+            'purchasable_type' => is_string($data['purchasable_type'] ?? null) || ($data['purchasable_type'] ?? null) === null,
+            'name' => is_string($data['name']),
+            'price' => is_int($data['price']),
+            'quantity' => is_int($data['quantity']),
+            'options' => is_array($data['options'] ?? []),
+            'meta' => is_array($data['meta'] ?? []),
+        ];
+
+        foreach ($checks as $key => $valid) {
+            if (! $valid) {
+                throw InvalidLineException::invalidValue($key);
+            }
+        }
+
         return new self(
             id: $data['id'],
             purchasableId: $data['purchasable_id'],

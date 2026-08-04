@@ -7,6 +7,7 @@ namespace TimurTurdyev\SimpleCart;
 use Illuminate\Support\Collection;
 use TimurTurdyev\SimpleCart\Contracts\Adjuster;
 use TimurTurdyev\SimpleCart\Exceptions\InvalidAdjusterException;
+use TimurTurdyev\SimpleCart\Exceptions\InvalidLineException;
 use TimurTurdyev\SimpleCart\Exceptions\ListLimitException;
 use TimurTurdyev\SimpleCart\Exceptions\UnknownLineException;
 use TimurTurdyev\SimpleCart\Support\Price;
@@ -175,20 +176,42 @@ final readonly class Cart
 
     public static function fromArray(ListPolicy $policy, array $data): self
     {
+        $lines = $data['lines'] ?? [];
+
+        if (! is_array($lines)) {
+            throw InvalidLineException::invalidPayload();
+        }
+
+        $entries = $data['adjusters'] ?? [];
+
+        if (! is_array($entries)) {
+            throw InvalidAdjusterException::malformedEntry();
+        }
+
         $adjusters = [];
 
-        foreach ($data['adjusters'] ?? [] as $entry) {
-            $class = $entry['class'] ?? '';
-
-            if (! class_exists($class) || ! is_subclass_of($class, Adjuster::class)) {
-                throw InvalidAdjusterException::invalidClass($class);
+        foreach ($entries as $entry) {
+            if (! is_array($entry)) {
+                throw InvalidAdjusterException::malformedEntry();
             }
 
-            $adjuster = $class::fromArray($entry['data'] ?? []);
+            $class = $entry['class'] ?? '';
+
+            if (! is_string($class) || ! class_exists($class) || ! is_subclass_of($class, Adjuster::class)) {
+                throw InvalidAdjusterException::invalidClass(is_string($class) ? $class : gettype($class));
+            }
+
+            $payload = $entry['data'] ?? [];
+
+            if (! is_array($payload)) {
+                throw InvalidAdjusterException::malformedEntry();
+            }
+
+            $adjuster = $class::fromArray($payload);
             $adjusters[$adjuster->name()] = $adjuster;
         }
 
-        return new self(ItemList::fromArray($policy, $data['lines'] ?? []), $adjusters);
+        return new self(ItemList::fromArray($policy, $lines), $adjusters);
     }
 
     private function withList(ItemList $list): self

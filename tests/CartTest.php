@@ -205,6 +205,29 @@ final class CartTest extends TestCase
         ]);
     }
 
+    public function test_from_array_rejects_malformed_sections(): void
+    {
+        $policy = new ListPolicy();
+
+        $payloads = [
+            ['lines' => 'garbage'],
+            ['lines' => ['garbage']],
+            ['adjusters' => 'garbage'],
+            ['adjusters' => ['garbage']],
+            ['adjusters' => [['class' => ['array'], 'data' => []]]],
+            ['adjusters' => [['class' => PercentageDiscount::class, 'data' => 'garbage']]],
+        ];
+
+        foreach ($payloads as $payload) {
+            try {
+                Cart::fromArray($policy, $payload);
+                $this->fail('Malformed payload accepted: '.json_encode($payload));
+            } catch (\TimurTurdyev\SimpleCart\Exceptions\CartException) {
+                $this->addToAssertionCount(1);
+            }
+        }
+    }
+
     private function line(int $id, int $price = 100, int $quantity = 1): Line
     {
         return Line::of($id, "Item {$id}", Price::fromMinor($price), $quantity);
