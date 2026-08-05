@@ -3,6 +3,12 @@
 All notable changes to this package are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.2.3] - 2026-08-05
+
+### Added
+
+- README recipe for placing an order from the cart: snapshot of lines and totals breakdown written into an application-side order, then `clear()`. The scenario is pinned by a package test.
+
 ## [2.2.2] - 2026-08-05
 
 ### Changed
