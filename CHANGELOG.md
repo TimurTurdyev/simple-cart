@@ -3,6 +3,12 @@
 All notable changes to this package are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [2.3.0] - 2026-08-24
+
+### Added
+
+- Support for Laravel 13: `illuminate/support` and `illuminate/auth` now accept `^12.0|^13.0`, dev requirement `orchestra/testbench` accepts `^10.0|^11.0`. The CI matrix runs the suite on both Laravel 12 and 13 (PHP 8.3, 8.4). No source changes were needed.
+
 ## [2.2.3] - 2026-08-05
 
 ### Added
