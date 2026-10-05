@@ -269,6 +269,9 @@ Cart::forgetAttribute('draft');
 
 Свой драйвер подключается снаружи, без правки пакета:
 
+```php
+use TimurTurdyev\SimpleCart\Storage\StorageManager;
+
 ## Идентичность корзины
 
 За владельца корзины отвечает слой `CartIdentity`. По умолчанию сессия. Нужна гостевая корзина дольше сессии - ставьте cookie-драйвер:
