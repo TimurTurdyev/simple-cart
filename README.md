@@ -242,6 +242,19 @@ Cart::acknowledgePrices();
 
 Событие `LineRepriced` на каждую строку.
 
+## Атрибуты списка
+
+```php
+Cart::setAttribute('region', 77);
+Cart::setAttributes(['utm' => ['source' => 'ya'], 'draft' => $request->only('name', 'phone')]);
+
+Cart::attribute('region');      // 77
+Cart::attributes();
+Cart::forgetAttribute('draft');
+```
+
+Значения: скаляры, null, массивы. При слиянии атрибуты пользователя важнее.
+
 ## Хранилище
 
 По умолчанию session: работает сразу после установки, пустые списки не оставляют записей. Переключение на базу - одна строка конфига:
