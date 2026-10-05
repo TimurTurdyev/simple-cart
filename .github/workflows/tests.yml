@@ -33,6 +33,8 @@ jobs:
           composer update --prefer-dist --no-interaction --no-progress
           --with="illuminate/support:^${{ matrix.laravel }}.0"
           --with="illuminate/auth:^${{ matrix.laravel }}.0"
+          --with="illuminate/database:^${{ matrix.laravel }}.0"
+          --with="illuminate/console:^${{ matrix.laravel }}.0"
 
       - name: Validate composer.json
         run: composer validate --strict

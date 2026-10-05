@@ -9,6 +9,7 @@ use Illuminate\Auth\GenericUser;
 use Orchestra\Testbench\Attributes\DefineEnvironment;
 use TimurTurdyev\SimpleCart\CartManager;
 use TimurTurdyev\SimpleCart\Contracts\Storage;
+use TimurTurdyev\SimpleCart\ListStatus;
 use TimurTurdyev\SimpleCart\Storage\CartRecord;
 use TimurTurdyev\SimpleCart\Storage\StorageManager;
 use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
@@ -17,14 +18,9 @@ final class MergeGuestCartTest extends TestCase
 {
     protected function defineEnvironment($app): void
     {
-        $app['config']->set('database.default', 'testing');
-        $app['config']->set('session.driver', 'array');
+        parent::defineEnvironment($app);
         $app['config']->set('simple_cart.storage', 'database');
-    }
-
-    protected function defineDatabaseMigrations(): void
-    {
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $app['config']->set('simple_cart.identity.driver', 'session');
     }
 
     public function test_login_merges_guest_cart_into_user_cart(): void
@@ -36,7 +32,8 @@ final class MergeGuestCartTest extends TestCase
 
         event(new Login('web', new GenericUser(['id' => 42]), false));
 
-        $this->assertSame(0, CartRecord::query()->where('owner', $guestOwner)->count());
+        $this->assertSame(0, CartRecord::query()->active()->where('owner', $guestOwner)->count());
+        $this->assertSame(ListStatus::Merged, CartRecord::query()->where('owner', $guestOwner)->value('status'));
 
         $payload = CartRecord::query()->where('owner', '42')->where('list', 'cart')->first()?->payload;
 
@@ -98,7 +95,8 @@ final class MergeGuestCartTest extends TestCase
 
         event(new Login('web', new GenericUser(['id' => 42]), false));
 
-        $this->assertSame(0, CartRecord::query()->where('owner', $guestOwner)->count());
+        $this->assertSame(0, CartRecord::query()->active()->where('owner', $guestOwner)->count());
+        $this->assertSame(ListStatus::Merged, CartRecord::query()->where('owner', $guestOwner)->value('status'));
         $this->assertSame(1, CartRecord::query()->where('owner', '42')->count());
 
         $store = $this->app->make('cache')->store();
@@ -120,7 +118,8 @@ final class MergeGuestCartTest extends TestCase
 
         event(new Login('web', new GenericUser(['id' => 42]), false));
 
-        $this->assertSame(0, CartRecord::query()->where('owner', $guestOwner)->count());
+        $this->assertSame(0, CartRecord::query()->active()->where('owner', $guestOwner)->count());
+        $this->assertSame(ListStatus::Merged, CartRecord::query()->where('owner', $guestOwner)->value('status'));
         $this->assertSame(2, CartRecord::query()->where('owner', '42')->first()?->payload['lines'][0]['quantity']);
     }
 

@@ -7,6 +7,7 @@ namespace TimurTurdyev\SimpleCart\Tests\Identity;
 use Closure;
 use Illuminate\Contracts\Cookie\QueueingFactory;
 use TimurTurdyev\SimpleCart\CartManager;
+use TimurTurdyev\SimpleCart\Exceptions\InvalidConfigurationException;
 use TimurTurdyev\SimpleCart\Identity\CookieIdentity;
 use TimurTurdyev\SimpleCart\Storage\CartRecord;
 use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
@@ -16,14 +17,9 @@ final class CookieIdentityTest extends TestCase
 {
     protected function defineEnvironment($app): void
     {
-        $app['config']->set('database.default', 'testing');
+        parent::defineEnvironment($app);
         $app['config']->set('simple_cart.storage', 'database');
         $app['config']->set('simple_cart.identity.driver', 'cookie');
-    }
-
-    protected function defineDatabaseMigrations(): void
-    {
-        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
     }
 
     public function test_generates_stable_id_when_cookie_is_missing(): void
@@ -95,13 +91,50 @@ final class CookieIdentityTest extends TestCase
         $this->assertSame(1, CartRecord::query()->where('owner', $queued->getValue())->count());
     }
 
-    private function identity(Closure $cookieValue, ?QueueingFactory $jar = null): CookieIdentity
+    public function test_custom_pattern_accepts_legacy_uniqid_values(): void
+    {
+        $pattern = '/^([0-9a-f]{32}|cart[0-9a-f]{13}\d\.\d{8})$/';
+        $legacy = uniqid('cart', true);
+
+        $this->assertSame($legacy, $this->identity(fn (): ?string => $legacy, pattern: $pattern)->id());
+        $this->assertSame('cart5f3a1b2c4d5e64.12345678', $this->identity(fn (): ?string => 'cart5f3a1b2c4d5e64.12345678', pattern: $pattern)->id());
+        $this->assertNotSame('cartXYZ.1', $this->identity(fn (): ?string => 'cartXYZ.1', pattern: $pattern)->id());
+        $this->assertNotSame('cart5f3a1b2c4d5e6.12345678', $this->identity(fn (): ?string => 'cart5f3a1b2c4d5e6.12345678', pattern: $pattern)->id());
+        $this->assertNotSame($legacy, $this->identity(fn (): ?string => $legacy)->id());
+    }
+
+    public function test_pattern_comes_from_config(): void
+    {
+        config()->set('simple_cart.identity.cookie.pattern', '/^([0-9a-f]{32}|cart[0-9a-f]{13}\d\.\d{8})$/');
+        $this->app['request']->cookies->set('simple_cart_id', 'cart5f3a1b2c4d5e64.12345678');
+
+        $identity = $this->app->make(\TimurTurdyev\SimpleCart\Identity\IdentityManager::class)->driver('cookie');
+
+        $this->assertSame('cart5f3a1b2c4d5e64.12345678', $identity->id());
+    }
+
+    public function test_broken_pattern_is_rejected(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+
+        $this->identity(fn (): ?string => null, pattern: '/[unclosed');
+    }
+
+    public function test_pattern_that_rejects_generated_ids_is_rejected(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+
+        $this->identity(fn (): ?string => null, pattern: '/^cart.+$/');
+    }
+
+    private function identity(Closure $cookieValue, ?QueueingFactory $jar = null, ?string $pattern = null): CookieIdentity
     {
         return new CookieIdentity(
             cookies: $jar ?? $this->app->make('cookie'),
             cookieValue: $cookieValue,
             name: 'simple_cart_id',
             ttlMinutes: 60 * 24 * 30,
+            pattern: $pattern ?? CookieIdentity::DEFAULT_PATTERN,
         );
     }
 }

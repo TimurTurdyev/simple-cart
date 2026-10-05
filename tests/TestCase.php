@@ -13,4 +13,15 @@ abstract class TestCase extends BaseTestCase
     {
         return [CartServiceProvider::class];
     }
+
+    protected function defineEnvironment($app): void
+    {
+        $app['config']->set('database.default', 'testing');
+        $app['config']->set('session.driver', 'array');
+    }
+
+    protected function defineDatabaseMigrations(): void
+    {
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+    }
 }

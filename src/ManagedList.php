@@ -4,14 +4,20 @@ declare(strict_types=1);
 
 namespace TimurTurdyev\SimpleCart;
 
+use Closure;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Collection;
 use TimurTurdyev\SimpleCart\Contracts\Adjuster;
 use TimurTurdyev\SimpleCart\Contracts\Purchasable;
 use TimurTurdyev\SimpleCart\Contracts\Storage;
+use TimurTurdyev\SimpleCart\Contracts\SupportsAtomicUpdate;
+use TimurTurdyev\SimpleCart\Contracts\SupportsLifecycle;
 use TimurTurdyev\SimpleCart\Events\LineAdded;
 use TimurTurdyev\SimpleCart\Events\LineRemoved;
+use TimurTurdyev\SimpleCart\Events\LineRepriced;
 use TimurTurdyev\SimpleCart\Events\LineUpdated;
+use TimurTurdyev\SimpleCart\Events\ListAttributesUpdated;
+use TimurTurdyev\SimpleCart\Events\ListCheckedOut;
 use TimurTurdyev\SimpleCart\Events\ListCleared;
 use TimurTurdyev\SimpleCart\Exceptions\UnknownLineException;
 use TimurTurdyev\SimpleCart\Support\ModelCache;
@@ -36,74 +42,131 @@ final class ManagedList
         return $this->name;
     }
 
-    public function add(Purchasable|Line $item, int $quantity = 1, array $options = [], array $meta = []): Line
+    /**
+     * Without an explicit quantity a new line gets the minimum of its quantity
+     * rule and an existing line grows by one step (1 when there is no rule).
+     * A Line instance always keeps its own quantity.
+     */
+    public function add(Purchasable|Line $item, ?int $quantity = null, array $options = [], array $meta = []): Line
     {
-        $line = $this->line($item, $quantity, $options, $meta);
-        $before = $this->state();
-        $state = $before->add($line);
+        $line = $this->line($item, $quantity ?? 1, $options, $meta);
+        $byRule = $quantity === null && ! $item instanceof Line;
+        $added = false;
 
-        if ($state->list === $before->list) {
-            return $before->get($line->id);
+        $state = $this->apply(function (Cart $cart) use ($line, $byRule, &$added): Cart {
+            $next = $cart->add($byRule ? $this->ruleQuantity($cart, $line) : $line);
+            $added = $next->list !== $cart->list;
+
+            return $next;
+        });
+
+        $stored = $state->get($line->id);
+
+        if ($added) {
+            $this->dispatch(new LineAdded($this->name, $stored));
         }
 
-        $this->mutate($state);
-
-        $added = $this->get($line->id);
-        $this->dispatch(new LineAdded($this->name, $added));
-
-        return $added;
+        return $stored;
     }
 
     public function toggle(Purchasable|Line $item, array $options = []): bool
     {
         $line = $this->line($item, 1, $options);
-        $existing = $this->get($line->id);
+        $removed = null;
 
-        if ($existing !== null) {
-            $this->mutate($this->state()->remove($existing->id));
-            $this->dispatch(new LineRemoved($this->name, $existing));
+        $state = $this->apply(function (Cart $cart) use ($line, &$removed): Cart {
+            $removed = $cart->get($line->id);
+
+            return $removed === null ? $cart->add($line) : $cart->remove($line->id);
+        });
+
+        if ($removed !== null) {
+            $this->dispatch(new LineRemoved($this->name, $removed));
 
             return false;
         }
 
-        $this->mutate($this->state()->add($line));
-        $this->dispatch(new LineAdded($this->name, $line));
+        $this->dispatch(new LineAdded($this->name, $state->get($line->id)));
 
         return true;
     }
 
     public function remove(string $id): void
     {
-        $line = $this->get($id);
+        $removed = null;
 
-        if ($line === null) {
-            return;
+        $this->apply(function (Cart $cart) use ($id, &$removed): Cart {
+            $removed = $cart->get($id);
+
+            return $cart->remove($id);
+        });
+
+        if ($removed !== null) {
+            $this->dispatch(new LineRemoved($this->name, $removed));
         }
-
-        $this->mutate($this->state()->remove($id));
-        $this->dispatch(new LineRemoved($this->name, $line));
     }
 
     public function setQuantity(string $id, int $quantity): void
     {
-        $before = $this->state()->get($id) ?? throw UnknownLineException::forId($id);
-
-        $this->mutate($this->state()->setQuantity($id, $quantity));
-
-        $after = $this->get($id);
-
-        $this->dispatch(
-            $after === null
-                ? new LineRemoved($this->name, $before)
-                : new LineUpdated($this->name, $after),
-        );
+        $this->updateQuantity($id, fn (Line $line): int => $quantity);
     }
 
     public function changeQuantity(string $id, int $delta): void
     {
-        $line = $this->state()->get($id) ?? throw UnknownLineException::forId($id);
+        $this->updateQuantity($id, fn (Line $line): int => $line->quantity + $delta);
+    }
 
-        $this->setQuantity($id, $line->quantity + $delta);
+    /**
+     * Moves the quantity by whole steps of the line's quantity rule (by 1 when
+     * there is no rule), as the "+" and "-" buttons do. Going below the rule
+     * minimum removes the line.
+     */
+    public function stepQuantity(string $id, int $steps = 1): void
+    {
+        $this->updateQuantity($id, function (Line $line) use ($steps): int {
+            $rule = $this->policy->quantityRuleFor($line);
+            $quantity = $line->quantity + $steps * ($rule?->step ?? 1);
+
+            return $rule !== null && $quantity < $rule->min ? 0 : $quantity;
+        });
+    }
+
+    /**
+     * Re-prices lines in place: the resolver returns the current price of a
+     * line or null to leave it as is. Without a resolver the price is taken
+     * from the hydrated Purchasable models. Returns the number of changed lines.
+     *
+     * @param (Closure(Line): ?Price)|null $resolver
+     */
+    public function reprice(?Closure $resolver = null): int
+    {
+        $resolver ??= $this->modelPrices();
+        $prices = [];
+
+        foreach ($this->state()->items() as $id => $line) {
+            $price = $resolver($line);
+
+            if ($price !== null) {
+                $prices[$id] = $price;
+            }
+        }
+
+        return $this->applyPrices($prices);
+    }
+
+    public function repriceLine(string $id, Price $price): void
+    {
+        $this->state()->get($id) ?? throw UnknownLineException::forId($id);
+
+        $this->applyPrices([$id => $price]);
+    }
+
+    /**
+     * Clears the "price changed" marks once the customer has seen them.
+     */
+    public function acknowledgePrices(): void
+    {
+        $this->apply(fn (Cart $cart): Cart => $cart->acknowledgePrices());
     }
 
     public function has(Purchasable|Line|string $item, array $options = []): bool
@@ -186,12 +249,12 @@ final class ManagedList
 
     public function adjust(Adjuster ...$adjusters): void
     {
-        $this->mutate($this->state()->adjust(...$adjusters));
+        $this->apply(fn (Cart $cart): Cart => $cart->adjust(...$adjusters));
     }
 
     public function removeAdjuster(string $name): void
     {
-        $this->mutate($this->state()->withoutAdjuster($name));
+        $this->apply(fn (Cart $cart): Cart => $cart->withoutAdjuster($name));
     }
 
     /**
@@ -200,6 +263,60 @@ final class ManagedList
     public function adjusters(): array
     {
         return $this->state()->adjusters;
+    }
+
+    public function attribute(string $key, mixed $default = null): mixed
+    {
+        return $this->state()->attributes[$key] ?? $default;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function attributes(): array
+    {
+        return $this->state()->attributes;
+    }
+
+    public function setAttribute(string $key, mixed $value): void
+    {
+        $this->setAttributes([$key => $value]);
+    }
+
+    /**
+     * Merges the values into the list attributes: contact, region, source
+     * tags, a form draft - anything the list should carry along.
+     *
+     * @param array<string, mixed> $values
+     */
+    public function setAttributes(array $values): void
+    {
+        $changed = [];
+
+        $this->apply(function (Cart $cart) use ($values, &$changed): Cart {
+            $changed = array_keys(array_filter(
+                $values,
+                fn (mixed $value, string|int $key): bool => ! array_key_exists($key, $cart->attributes) || $cart->attributes[$key] !== $value,
+                ARRAY_FILTER_USE_BOTH,
+            ));
+
+            return $cart->withAttributes($values);
+        });
+
+        $this->dispatchAttributes($changed);
+    }
+
+    public function forgetAttribute(string $key): void
+    {
+        $changed = [];
+
+        $this->apply(function (Cart $cart) use ($key, &$changed): Cart {
+            $changed = array_key_exists($key, $cart->attributes) ? [$key] : [];
+
+            return $cart->withoutAttribute($key);
+        });
+
+        $this->dispatchAttributes($changed);
     }
 
     public function subtotal(): Price
@@ -224,12 +341,37 @@ final class ManagedList
         $this->dispatch(new ListCleared($this->name));
     }
 
+    /**
+     * Ends the list as ordered: the record is kept with the "ordered" status
+     * and the reference (an order number or id of the application), and the
+     * next write starts a new list. Returns the snapshot of exactly the record
+     * that was closed, so lines added by another tab a moment ago are not lost.
+     */
+    public function checkout(?string $reference = null): Cart
+    {
+        if ($this->storage instanceof SupportsLifecycle) {
+            $payload = $this->storage->close($this->name, ListStatus::Ordered, $reference);
+        } else {
+            $payload = $this->storage->read($this->name);
+            $this->storage->forget($this->name);
+        }
+
+        $snapshot = Cart::fromArray($this->policy, $payload);
+        $this->state = Cart::make($this->policy);
+
+        if ($payload !== []) {
+            $this->dispatch(new ListCheckedOut($this->name, $reference, $snapshot));
+        }
+
+        return $snapshot;
+    }
+
     public function moveTo(string $target, Purchasable|Line|string $item, array $options = []): void
     {
         $id = $this->idOf($item, $options);
         $line = $this->state()->get($id) ?? throw UnknownLineException::forId($id);
 
-        $this->manager->list($target)->add($line);
+        $this->manager->list($target)->receive($line);
         $this->remove($id);
     }
 
@@ -243,18 +385,152 @@ final class ManagedList
         return $this->state ??= Cart::fromArray($this->policy, $this->storage->read($this->name));
     }
 
-    private function mutate(Cart $state): void
+    /**
+     * Runs the operation against the freshest stored state. With an atomic
+     * storage the operation may run more than once, so it must decide
+     * everything from the cart it receives and keep side effects out.
+     *
+     * @param Closure(Cart): Cart $operation
+     */
+    private function apply(Closure $operation): Cart
     {
-        $this->state = $state;
+        if (! $this->storage instanceof SupportsAtomicUpdate) {
+            $state = $operation($this->state());
+            $this->storage->write($this->name, $this->payload($state));
 
-        $empty = $state->isEmpty() && $state->adjusters === [];
+            return $this->state = $state;
+        }
 
-        $this->storage->write($this->name, $empty ? [] : $state->toArray());
+        $state = null;
+
+        $this->storage->update($this->name, function (array $payload) use ($operation, &$state): array {
+            $state = $operation(Cart::fromArray($this->policy, $payload));
+
+            return $this->payload($state);
+        });
+
+        return $this->state = $state;
+    }
+
+    /**
+     * Takes a line moved from another list: the line is re-keyed for this list
+     * and its quantity is fitted into this list's quantity rule.
+     */
+    private function receive(Line $line): void
+    {
+        $moved = $line->withIdentity($this->policy->keyOptions);
+        $added = false;
+
+        $state = $this->apply(function (Cart $cart) use ($moved, &$added): Cart {
+            $next = $cart->mergeLine($moved);
+            $added = $next->list !== $cart->list;
+
+            return $next;
+        });
+
+        if ($added) {
+            $this->dispatch(new LineAdded($this->name, $state->get($moved->id)));
+        }
+    }
+
+    /**
+     * @param array<string, Price> $prices
+     */
+    private function applyPrices(array $prices): int
+    {
+        $changed = [];
+
+        $state = $this->apply(function (Cart $cart) use ($prices, &$changed): Cart {
+            $changed = [];
+
+            foreach ($prices as $id => $price) {
+                $line = $cart->get($id);
+
+                if ($line === null || $line->price->equals($price)) {
+                    continue;
+                }
+
+                $changed[$id] = $line->price;
+                $cart = $cart->reprice($id, $price);
+            }
+
+            return $cart;
+        });
+
+        foreach ($changed as $id => $previous) {
+            $this->dispatch(new LineRepriced($this->name, $state->get($id), $previous));
+        }
+
+        return count($changed);
+    }
+
+    /**
+     * @return Closure(Line): ?Price
+     */
+    private function modelPrices(): Closure
+    {
+        $models = $this->models();
+
+        return function (Line $line) use ($models): ?Price {
+            $model = $models->get($line->id);
+
+            return $model instanceof Purchasable ? $model->cartPrice() : null;
+        };
+    }
+
+    private function ruleQuantity(Cart $cart, Line $line): Line
+    {
+        $rule = $this->policy->quantityRuleFor($line);
+
+        if ($rule === null) {
+            return $line;
+        }
+
+        return $line->withQuantity($cart->has($line->id) ? $rule->step : $rule->min);
+    }
+
+    /**
+     * @param Closure(Line): int $quantity
+     */
+    private function updateQuantity(string $id, Closure $quantity): void
+    {
+        $before = null;
+
+        $state = $this->apply(function (Cart $cart) use ($id, $quantity, &$before): Cart {
+            $before = $cart->get($id) ?? throw UnknownLineException::forId($id);
+
+            return $cart->setQuantity($id, $quantity($before));
+        });
+
+        $after = $state->get($id);
+
+        $this->dispatch(
+            $after === null
+                ? new LineRemoved($this->name, $before)
+                : new LineUpdated($this->name, $after),
+        );
+    }
+
+    private function payload(Cart $state): array
+    {
+        return $state->isBlank() ? [] : $state->toArray();
+    }
+
+    /**
+     * @param list<string> $changed
+     */
+    private function dispatchAttributes(array $changed): void
+    {
+        if ($changed !== []) {
+            $this->dispatch(new ListAttributesUpdated($this->name, $changed));
+        }
     }
 
     private function line(Purchasable|Line $item, int $quantity, array $options, array $meta = []): Line
     {
-        return $item instanceof Line ? $item : Line::for($item, $quantity, $options, $meta);
+        return $item instanceof Line
+            ? $item->withIdentity($this->policy->keyOptions)
+            : Line::for($item, $quantity, $options, $meta, $this->policy->keyOptions);
     }
 
     private function idOf(Purchasable|Line|string $item, array $options): string
@@ -262,7 +538,7 @@ final class ManagedList
         return match (true) {
             is_string($item) => $item,
             $item instanceof Line => $item->id,
-            default => Line::identity($item->cartId(), $options, $item::class),
+            default => Line::identity($item->cartId(), $options, $item::class, $this->policy->keyOptions),
         };
     }
 

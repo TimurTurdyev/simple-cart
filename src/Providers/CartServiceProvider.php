@@ -8,6 +8,7 @@ use Illuminate\Auth\Events\Login;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use TimurTurdyev\SimpleCart\CartManager;
+use TimurTurdyev\SimpleCart\Console\PruneCommand;
 use TimurTurdyev\SimpleCart\Contracts\CartIdentity;
 use TimurTurdyev\SimpleCart\Contracts\Storage;
 use TimurTurdyev\SimpleCart\Identity\IdentityManager;
@@ -55,9 +56,15 @@ final class CartServiceProvider extends ServiceProvider
             __DIR__.'/../../config/simple_cart.php' => config_path('simple_cart.php'),
         ], 'simple-cart-config');
 
+        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
+
         $this->publishes([
             __DIR__.'/../../database/migrations' => database_path('migrations'),
         ], 'simple-cart-migrations');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([PruneCommand::class]);
+        }
 
         if ($this->app->make('config')->get('simple_cart.merge.enabled')) {
             $this->app->make('events')->listen(Login::class, MergeGuestCart::class);

@@ -7,6 +7,7 @@ namespace TimurTurdyev\SimpleCart;
 use Illuminate\Support\Collection;
 use TimurTurdyev\SimpleCart\Contracts\Adjuster;
 use TimurTurdyev\SimpleCart\Exceptions\InvalidAdjusterException;
+use TimurTurdyev\SimpleCart\Exceptions\InvalidAttributeException;
 use TimurTurdyev\SimpleCart\Exceptions\InvalidLineException;
 use TimurTurdyev\SimpleCart\Exceptions\ListLimitException;
 use TimurTurdyev\SimpleCart\Exceptions\UnknownLineException;
@@ -17,10 +18,12 @@ final readonly class Cart
 {
     /**
      * @param array<string, Adjuster> $adjusters
+     * @param array<string, mixed> $attributes
      */
     private function __construct(
         public ItemList $list,
         public array $adjusters,
+        public array $attributes = [],
     ) {
     }
 
@@ -32,6 +35,21 @@ final readonly class Cart
     public function add(Line $line): self
     {
         return $this->withList($this->list->add($line));
+    }
+
+    public function mergeLine(Line $line): self
+    {
+        return $this->withList($this->list->mergeLine($line));
+    }
+
+    public function reprice(string $id, Price $price): self
+    {
+        return $this->withList($this->list->reprice($id, $price));
+    }
+
+    public function acknowledgePrices(): self
+    {
+        return $this->withList($this->list->acknowledgePrices());
     }
 
     public function remove(string $id): self
@@ -99,7 +117,7 @@ final readonly class Cart
             $merged[$adjuster->name()] = $adjuster;
         }
 
-        return new self($this->list, $merged);
+        return new self($this->list, $merged, $this->attributes);
     }
 
     public function withoutAdjuster(string $name): self
@@ -107,7 +125,32 @@ final readonly class Cart
         $adjusters = $this->adjusters;
         unset($adjusters[$name]);
 
-        return new self($this->list, $adjusters);
+        return new self($this->list, $adjusters, $this->attributes);
+    }
+
+    /**
+     * @param array<string, mixed> $values
+     */
+    public function withAttributes(array $values): self
+    {
+        foreach ($values as $key => $value) {
+            self::assertAttribute($key, $value);
+        }
+
+        return new self($this->list, $this->adjusters, [...$this->attributes, ...$values]);
+    }
+
+    public function withoutAttribute(string $key): self
+    {
+        $attributes = $this->attributes;
+        unset($attributes[$key]);
+
+        return new self($this->list, $this->adjusters, $attributes);
+    }
+
+    public function isBlank(): bool
+    {
+        return $this->isEmpty() && $this->adjusters === [] && $this->attributes === [];
     }
 
     public function subtotal(): Price
@@ -143,7 +186,7 @@ final readonly class Cart
             }
 
             try {
-                $merged = $merged->add($line);
+                $merged = $merged->mergeLine($line);
             } catch (ListLimitException) {
                 continue;
             }
@@ -155,7 +198,7 @@ final readonly class Cart
             }
         }
 
-        return $merged;
+        return new self($merged->list, $merged->adjusters, [...$guest->attributes, ...$merged->attributes]);
     }
 
     public function clear(): self
@@ -165,13 +208,19 @@ final readonly class Cart
 
     public function toArray(): array
     {
-        return [
+        $data = [
             'lines' => $this->list->toArray(),
             'adjusters' => array_values(array_map(
                 fn (Adjuster $adjuster): array => ['class' => $adjuster::class, 'data' => $adjuster->toArray()],
                 $this->adjusters,
             )),
         ];
+
+        if ($this->attributes !== []) {
+            $data['attributes'] = $this->attributes;
+        }
+
+        return $data;
     }
 
     public static function fromArray(ListPolicy $policy, array $data): self
@@ -211,11 +260,51 @@ final readonly class Cart
             $adjusters[$adjuster->name()] = $adjuster;
         }
 
-        return new self(ItemList::fromArray($policy, $lines), $adjusters);
+        $attributes = $data['attributes'] ?? [];
+
+        if (! is_array($attributes)) {
+            throw InvalidAttributeException::malformed();
+        }
+
+        foreach ($attributes as $key => $value) {
+            self::assertAttribute($key, $value);
+        }
+
+        return new self(ItemList::fromArray($policy, $lines), $adjusters, $attributes);
+    }
+
+    private static function assertAttribute(mixed $key, mixed $value): void
+    {
+        if (! is_string($key) || $key === '') {
+            throw InvalidAttributeException::invalidKey();
+        }
+
+        if (! self::isPlain($value)) {
+            throw InvalidAttributeException::invalidValue($key);
+        }
+    }
+
+    private static function isPlain(mixed $value): bool
+    {
+        if ($value === null || is_scalar($value)) {
+            return true;
+        }
+
+        if (! is_array($value)) {
+            return false;
+        }
+
+        foreach ($value as $item) {
+            if (! self::isPlain($item)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function withList(ItemList $list): self
     {
-        return new self($list, $this->adjusters);
+        return new self($list, $this->adjusters, $this->attributes);
     }
 }

@@ -8,18 +8,13 @@ use Illuminate\Support\Facades\Event;
 use TimurTurdyev\SimpleCart\Adjusters\PercentageDiscount;
 use TimurTurdyev\SimpleCart\Adjusters\Shipping;
 use TimurTurdyev\SimpleCart\CartManager;
-use TimurTurdyev\SimpleCart\Events\ListCleared;
+use TimurTurdyev\SimpleCart\Events\ListCheckedOut;
 use TimurTurdyev\SimpleCart\Line;
 use TimurTurdyev\SimpleCart\Support\Price;
 use TimurTurdyev\SimpleCart\Tests\Fixtures\FakeProduct;
 
 final class CheckoutRecipeTest extends TestCase
 {
-    protected function defineEnvironment($app): void
-    {
-        $app['config']->set('session.driver', 'array');
-    }
-
     public function test_readme_checkout_recipe(): void
     {
         Event::fake();
@@ -31,8 +26,10 @@ final class CheckoutRecipeTest extends TestCase
             new Shipping(Price::fromMinor(500)),
         );
 
-        $lines = $cart->items()->map(fn (Line $line): array => $line->toArray())->values()->all();
-        $breakdown = $cart->totals()->breakdown();
+        $snapshot = $cart->checkout(reference: 'ORD-1');
+
+        $lines = $snapshot->items()->map(fn (Line $line): array => $line->toArray())->values()->all();
+        $breakdown = $snapshot->totals()->breakdown();
 
         $order = [
             'lines' => $lines,
@@ -43,8 +40,6 @@ final class CheckoutRecipeTest extends TestCase
             ),
             'total' => $breakdown['total']->minor(),
         ];
-
-        $cart->clear();
 
         $this->assertCount(1, $order['lines']);
         $this->assertSame(2999, $order['lines'][0]['price']);
@@ -59,6 +54,6 @@ final class CheckoutRecipeTest extends TestCase
         );
 
         $this->assertTrue($cart->isEmpty());
-        Event::assertDispatched(ListCleared::class, fn (ListCleared $e): bool => $e->list === 'cart');
+        Event::assertDispatched(ListCheckedOut::class, fn (ListCheckedOut $e): bool => $e->list === 'cart' && $e->reference === 'ORD-1');
     }
 }

@@ -171,4 +171,42 @@ final class LineTest extends TestCase
 
         Line::of(1, 'Item', Price::fromMinor(100), quantity: 0);
     }
+
+    public function test_key_options_limit_identity(): void
+    {
+        $shown = Line::identity(11, ['size' => 'M', 'label' => 'x'], keyOptions: ['size']);
+        $other = Line::identity(11, ['size' => 'M', 'label' => 'y'], keyOptions: ['size']);
+        $size = Line::identity(11, ['size' => 'L', 'label' => 'x'], keyOptions: ['size']);
+
+        $this->assertSame($shown, $other);
+        $this->assertNotSame($shown, $size);
+        $this->assertSame(Line::identity(11, ['size' => 'M']), $shown);
+    }
+
+    public function test_null_key_options_use_every_option(): void
+    {
+        $this->assertSame(
+            Line::identity(11, ['size' => 'M', 'label' => 'x']),
+            Line::identity(11, ['size' => 'M', 'label' => 'x'], keyOptions: null),
+        );
+    }
+
+    public function test_with_identity_rekeys_line_and_keeps_data(): void
+    {
+        $line = Line::of(11, 'Shirt', Price::fromMinor(100), 2, ['size' => 'M', 'label' => 'x'], meta: ['a' => 1]);
+        $rekeyed = $line->withIdentity(['size']);
+
+        $this->assertSame(Line::identity(11, ['size' => 'M']), $rekeyed->id);
+        $this->assertSame(2, $rekeyed->quantity);
+        $this->assertSame(['size' => 'M', 'label' => 'x'], $rekeyed->options);
+        $this->assertSame(['a' => 1], $rekeyed->meta);
+        $this->assertSame($line->id, $line->withIdentity(null)->id);
+    }
+
+    public function test_from_array_keeps_stored_id(): void
+    {
+        $line = Line::of(11, 'Shirt', Price::fromMinor(100), 1, ['size' => 'M', 'label' => 'x']);
+
+        $this->assertSame($line->id, Line::fromArray($line->toArray())->id);
+    }
 }

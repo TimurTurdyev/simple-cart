@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace TimurTurdyev\SimpleCart\Storage;
 
+use Closure;
 use Illuminate\Contracts\Cache\Repository;
 use TimurTurdyev\SimpleCart\Contracts\CartIdentity;
 use TimurTurdyev\SimpleCart\Contracts\Storage;
+use TimurTurdyev\SimpleCart\Contracts\SupportsAtomicUpdate;
+use TimurTurdyev\SimpleCart\Contracts\SupportsLifecycle;
 use TimurTurdyev\SimpleCart\Contracts\SupportsOwnerMerge;
 use TimurTurdyev\SimpleCart\Contracts\SupportsOwnerScope;
 use TimurTurdyev\SimpleCart\ListPolicy;
+use TimurTurdyev\SimpleCart\ListStatus;
 use TimurTurdyev\SimpleCart\MergeStrategy;
 
-final readonly class CachedStorage implements Storage, SupportsOwnerMerge, SupportsOwnerScope
+final readonly class CachedStorage implements Storage, SupportsAtomicUpdate, SupportsLifecycle, SupportsOwnerMerge, SupportsOwnerScope
 {
     public function __construct(
         private Storage $inner,
@@ -43,6 +47,43 @@ final readonly class CachedStorage implements Storage, SupportsOwnerMerge, Suppo
         $this->inner->write($list, $payload);
 
         $this->store([...$this->cachedLists(), $list => $payload]);
+    }
+
+    /**
+     * The cache key is dropped instead of being overwritten: concurrent
+     * writers may finish their puts in any order and pin a payload without
+     * the other writer's change. The next read primes the key from storage.
+     */
+    public function update(string $list, Closure $mutator): array
+    {
+        if (! $this->inner instanceof SupportsAtomicUpdate) {
+            $payload = $mutator($this->read($list));
+            $this->write($list, $payload);
+
+            return $payload;
+        }
+
+        try {
+            return $this->inner->update($list, $mutator);
+        } finally {
+            $this->cache->forget($this->key());
+        }
+    }
+
+    public function close(string $list, ListStatus $status, ?string $reference = null): array
+    {
+        if (! $this->inner instanceof SupportsLifecycle) {
+            $payload = $this->inner->read($list);
+            $this->forget($list);
+
+            return $payload;
+        }
+
+        try {
+            return $this->inner->close($list, $status, $reference);
+        } finally {
+            $this->cache->forget($this->key());
+        }
     }
 
     public function forget(string $list): void

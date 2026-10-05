@@ -11,7 +11,7 @@ final class IdentityManager extends Manager
 {
     public function getDefaultDriver(): string
     {
-        return $this->config->get('simple_cart.identity.driver', 'session');
+        return $this->config->get('simple_cart.identity.driver', 'cookie');
     }
 
     protected function createSessionDriver(): CartIdentity
@@ -33,6 +33,7 @@ final class IdentityManager extends Manager
             },
             name: $name,
             ttlMinutes: (int) ($config['ttl_minutes'] ?? 60 * 24 * 30),
+            pattern: (string) ($config['pattern'] ?? CookieIdentity::DEFAULT_PATTERN),
         );
     }
 }
