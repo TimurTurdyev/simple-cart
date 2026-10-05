@@ -216,6 +216,10 @@ Cart::add($box);                    // 66
 Cart::add($box, quantity: 70);      // QuantityRuleException: min, step, max, given
 Cart::stepQuantity($line->id, -1);  // минус шаг, ниже min строка уходит
 
+$rule->isValid(70);                 // false
+$rule->normalize(70);               // 132
+```
+
 ## Хранилище
 
 По умолчанию session: работает сразу после установки, пустые списки не оставляют записей. Переключение на базу - одна строка конфига:
