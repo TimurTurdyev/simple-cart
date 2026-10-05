@@ -259,6 +259,10 @@ Cart::forgetAttribute('draft');
 
 По умолчанию database, таблица `simple_cart_lists`:
 
+```php
+'storage' => env('CART_STORAGE', 'database'),   // или 'session'
+```
+
 ## Идентичность корзины
 
 За владельца корзины отвечает слой `CartIdentity`. По умолчанию сессия. Нужна гостевая корзина дольше сессии - ставьте cookie-драйвер:
