@@ -194,6 +194,12 @@ Cart::moveTo('wishlist', $line->id);   // отложить на потом
 Wishlist::moveToCart($item);
 ```
 
+## Правила количества
+
+```php
+use TimurTurdyev\SimpleCart\Contracts\HasQuantityRule;
+use TimurTurdyev\SimpleCart\Support\QuantityRule;
+
 ## Хранилище
 
 По умолчанию session: работает сразу после установки, пустые списки не оставляют записей. Переключение на базу - одна строка конфига:
