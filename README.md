@@ -337,9 +337,20 @@ $order = DB::transaction(function () {
 
 ## Аналитика и брошенные корзины
 
-Таблица `simple_cart_lists` открыта для чтения: колонки `owner`, `list`, `payload` и таймстампы, формат меняет разве что мажорная версия.
+Таблица `simple_cart_lists`: `owner`, `list`, `payload`, `status` (`active`, `ordered`, `merged`, `expired`), `status_changed_at`, `reference`, `version`, `slot` и таймстампы.
 
-Брошенные корзины админка находит SQL-запросом по `updated_at`. Внутрь payload пускают json-функции БД и модель `TimurTurdyev\SimpleCart\Storage\CartRecord`. Цены в минорных единицах, курсов валют тут нет.
+```php
+use TimurTurdyev\SimpleCart\ListStatus;
+use TimurTurdyev\SimpleCart\Storage\CartRecord;
+
+CartRecord::query()->active()->list('cart')->idleSince(now()->subDay())->get();
+CartRecord::query()->status(ListStatus::Ordered)->where('reference', $number)->first();
+
+$record->attributes();
+$record->cart()->total();
+```
+
+Цены в минорных единицах, курсов валют тут нет.
 
 ## Чистка
 
@@ -363,7 +374,7 @@ Schedule::command('simple-cart:prune')->daily();
 
 ## Переход с darryldecode/laravelshoppingcart
 
-Таблица соответствия API и рецепт переноса данных - в [UPGRADE.md](UPGRADE.md). Встроенного импорта нет: старые корзины переносит одноразовый скрипт приложения через `forOwner($ownerId)->write(...)`, id владельцев не меняются, живые cookie продолжают находить свои корзины.
+Таблица соответствия API и рецепт переноса данных - в [UPGRADE.md](UPGRADE.md), там же переход с 2.x на 3.0. Встроенного импорта нет: старые корзины переносит одноразовый скрипт приложения через `forOwner($ownerId)->write(...)`, id владельцев не меняются, живые cookie продолжают находить свои корзины.
 
 ## Тесты
 
