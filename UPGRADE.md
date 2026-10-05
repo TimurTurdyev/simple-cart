@@ -20,6 +20,9 @@ Other changes:
 - `add()` quantity is `?int`; null means the rule minimum, or 1.
 - On login the guest list is kept with `status = merged`. Count only `CartRecord::query()->active()`.
 - After an order call `Cart::checkout($number)` instead of `clear()`.
+- Readers of the table should filter `slot = ''`.
+- Cookie ids must match `identity.cookie.pattern`; for `uniqid('cart', true)` use `'/^([0-9a-f]{32}|cart[0-9a-f]{13}\d\.\d{8})$/'`.
+- Schedule `php artisan simple-cart:prune`.
 
 ## From 1.0 to 2.0
 
