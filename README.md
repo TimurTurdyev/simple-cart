@@ -200,6 +200,14 @@ Wishlist::moveToCart($item);
 use TimurTurdyev\SimpleCart\Contracts\HasQuantityRule;
 use TimurTurdyev\SimpleCart\Support\QuantityRule;
 
+class Box extends Model implements Purchasable, HasQuantityRule
+{
+    public function cartQuantityRule(): QuantityRule
+    {
+        return new QuantityRule(min: 66, step: 66, max: 660);
+    }
+}
+
 ## Хранилище
 
 По умолчанию session: работает сразу после установки, пустые списки не оставляют записей. Переключение на базу - одна строка конфига:
