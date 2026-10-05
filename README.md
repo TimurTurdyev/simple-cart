@@ -308,31 +308,7 @@ Cookie ставится лениво, при первой реальной за�
 
 ## Оформление заказа
 
-Заказ - зона приложения: модель, статусы, оплата и нумерация живут на его стороне. Пакет отдает снапшот корзины и очищает ее:
-
-```php
-use Illuminate\Support\Facades\DB;
-use TimurTurdyev\SimpleCart\Facades\Cart;
-use TimurTurdyev\SimpleCart\Line;
-use TimurTurdyev\SimpleCart\Support\Price;
-
-$order = DB::transaction(function () {
-    $breakdown = Cart::totals()->breakdown();
-
-    $order = Order::create([
-        'lines' => Cart::items()->map(fn (Line $line): array => $line->toArray())->values()->all(),
-        'subtotal' => $breakdown['subtotal']->minor(),
-        'adjustments' => array_map(fn (Price $amount): int => $amount->minor(), $breakdown['adjustments']),
-        'total' => $breakdown['total']->minor(),
-    ]);
-
-    Cart::clear();
-
-    return $order;
-});
-```
-
-Цены зафиксированы в момент `add()` и лежат в минорных единицах - подорожание товара между добавлением и оформлением на заказ не влияет. Скидки в снапшоте отрицательные, поэтому `subtotal + adjustments = total`. `clear()` шлет `ListCleared` - удобная точка для аналитики. Сценарий закреплен тестом `tests/CheckoutRecipeTest.php`.
+Заказ - зона приложения: модель, статусы, оплата и нумерация живут на его стороне.
 
 ## Аналитика и брошенные корзины
 
