@@ -23,6 +23,12 @@ final readonly class MergeGuestCart
 
     public function handle(Login $event): void
     {
+        $guard = $this->identity->authGuard();
+
+        if ($guard !== null && $event->guard !== $guard) {
+            return;
+        }
+
         $driver = $this->storage->driver();
 
         if (! $driver instanceof SupportsOwnerMerge) {
@@ -36,7 +42,7 @@ final readonly class MergeGuestCart
 
         $driver->mergeOwners(
             from: $this->identity->driver()->id(),
-            to: (string) $event->user->getAuthIdentifier(),
+            to: $this->identity->ownerFor($event->user),
             strategy: MergeStrategy::from($this->config->get('simple_cart.merge.strategy', 'sum')),
             policies: $policies,
         );

@@ -25,6 +25,14 @@ return [
             // '/^([0-9a-f]{32}|cart[0-9a-f]{13}\d\.\d{8})$/'
             'pattern' => '/^[0-9a-f]{32}$/',
         ],
+        // Signed-in users own carts by their auth id. guard: which guard's
+        // users own carts (null - the default guard); the guest cart is merged
+        // on login through that guard only. prefix: prepended to the auth id,
+        // e.g. 'customer:' keeps customer 5 apart from manager 5.
+        'auth' => [
+            'guard' => null,
+            'prefix' => '',
+        ],
     ],
 
     // Named item lists and their policies.

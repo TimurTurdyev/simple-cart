@@ -24,6 +24,7 @@ use TimurTurdyev\SimpleCart\ListStatus;
  * @method static Builder<self> status(ListStatus ...$statuses)
  * @method static Builder<self> list(string $name)
  * @method static Builder<self> idleSince(DateTimeInterface $before)
+ * @method static Builder<self> owner(string $owner)
  */
 final class CartRecord extends Model
 {
@@ -64,6 +65,14 @@ final class CartRecord extends Model
     public function scopeList(Builder $query, string $name): void
     {
         $query->where('list', $name);
+    }
+
+    /**
+     * Pair with IdentityManager::ownerFor() to find a user's lists.
+     */
+    public function scopeOwner(Builder $query, string $owner): void
+    {
+        $query->where('owner', $owner);
     }
 
     public function scopeIdleSince(Builder $query, DateTimeInterface $before): void
