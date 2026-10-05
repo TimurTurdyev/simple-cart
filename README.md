@@ -12,10 +12,11 @@ Simple by design, not by capability. Корзина, закладки и сра�
 
 ```bash
 composer require timurturdyev/simple-cart
+php artisan migrate
 php artisan vendor:publish --tag=simple-cart-config   # по желанию
 ```
 
-Провайдер подхватывается автоматически через package discovery.
+Провайдер и миграции подхватываются автоматически. По умолчанию корзина в базе, гость узнается по cookie.
 
 ## Быстрый старт
 
