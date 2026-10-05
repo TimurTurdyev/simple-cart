@@ -208,6 +208,9 @@ class Box extends Model implements Purchasable, HasQuantityRule
     }
 }
 
+'cart' => ['policy' => 'append', 'quantity' => ['min' => 1, 'step' => 1, 'max' => 99]],
+```
+
 ## Хранилище
 
 По умолчанию session: работает сразу после установки, пустые списки не оставляют записей. Переключение на базу - одна строка конфига:
