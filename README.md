@@ -323,6 +323,10 @@ $order = DB::transaction(function () {
 
     return Order::create([
         'number' => $number,
+        'lines' => $snapshot->items()->map(fn (Line $line): array => $line->toArray())->values()->all(),
+        'subtotal' => $breakdown['subtotal']->minor(),
+        'adjustments' => array_map(fn (Price $amount): int => $amount->minor(), $breakdown['adjustments']),
+        'total' => $breakdown['total']->minor(),
 
 ## Аналитика и брошенные корзины
 
