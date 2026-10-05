@@ -310,6 +310,12 @@ Cookie ставится лениво, при первой реальной за�
 
 Заказ - зона приложения: модель, статусы, оплата и нумерация живут на его стороне.
 
+```php
+use Illuminate\Support\Facades\DB;
+use TimurTurdyev\SimpleCart\Facades\Cart;
+use TimurTurdyev\SimpleCart\Line;
+use TimurTurdyev\SimpleCart\Support\Price;
+
 ## Аналитика и брошенные корзины
 
 Таблица `simple_cart_lists` открыта для чтения: колонки `owner`, `list`, `payload` и таймстампы, формат меняет разве что мажорная версия.
