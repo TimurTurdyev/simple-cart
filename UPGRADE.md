@@ -1,5 +1,10 @@
 # Upgrade Guide
 
+## From 2.x to 3.0
+
+```bash
+php artisan migrate
+
 ## From 1.0 to 2.0
 
 - The package is renamed: require `timurturdyev/simple-cart` instead of `timurturdyev/laravel-cart` and change the namespace prefix `TimurTurdyev\Cart` to `TimurTurdyev\SimpleCart` in your imports.
