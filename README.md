@@ -354,6 +354,10 @@ Schedule::command('simple-cart:prune')->daily();
     'delete_after_days' => [
         'expired' => 30,
         'merged' => 7,
+        'ordered' => null,              // null - хранить
+    ],
+],
+```
 
 ## Переход с darryldecode/laravelshoppingcart
 
