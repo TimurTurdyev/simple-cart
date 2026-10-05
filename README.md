@@ -230,6 +230,12 @@ Cart::reprice();                                      // цены из моде�
 Cart::repriceLine($line->id, Price::fromMinor(1200));
 ```
 
+```blade
+@if ($line->priceChanged())
+    было {{ $line->previousPrice->format() }}, стало {{ $line->price->format() }}
+@endif
+```
+
 ## Хранилище
 
 По умолчанию session: работает сразу после установки, пустые списки не оставляют записей. Переключение на базу - одна строка конфига:
