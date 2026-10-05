@@ -12,6 +12,10 @@ Defaults are `storage = database` and `identity.driver = cookie`. Old behaviour:
 
 ```dotenv
 CART_STORAGE=session
+CART_IDENTITY=session
+```
+
+Other changes:
 
 ## From 1.0 to 2.0
 
