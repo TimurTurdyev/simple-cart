@@ -3,6 +3,29 @@
 All notable changes to this package are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.0.0] - 2026-10-05
+
+### Added
+
+- Safe concurrent writes: the database storage keeps a `version` per list and re-applies an operation to the fresh list when another request changed it in between (`Contracts\SupportsAtomicUpdate`, `database.retries`, `ConcurrentModificationException`). Two tabs or a double click no longer lose lines.
+- `lists.*.key_options`: only the listed options make up the line identity, display-only options no longer split one product into two lines.
+- Quantity rules: `Support\QuantityRule` (min, step, max) with pure `isValid()` and `normalize()`, `Contracts\HasQuantityRule` for purchasables, `lists.*.quantity` defaults, `QuantityRuleException`, `ManagedList::stepQuantity()`. Merging and moving lines fit quantities into the rule instead of failing.
+- Re-pricing without re-creating lines: `reprice()`, `repriceLine()`, `acknowledgePrices()`, `Line::withPrice()`, `priceChanged()`, `previousPrice`, event `LineRepriced`.
+- List attributes: `attribute()`, `attributes()`, `setAttribute()`, `setAttributes()`, `forgetAttribute()`, event `ListAttributesUpdated`.
+- List lifecycle: `ListStatus` (active, ordered, merged, expired), `ManagedList::checkout(?string $reference)`, `Contracts\SupportsLifecycle`, event `ListCheckedOut`.
+- `php artisan simple-cart:prune` with `prune.*` settings.
+- `identity.cookie.pattern` for cookie ids of another format.
+- `CartRecord` scopes `active()`, `status()`, `list()`, `idleSince()` and helpers `attributes()`, `cart()` for admin screens.
+
+### Changed
+
+- **Breaking:** defaults are `storage = database` and `identity.driver = cookie`; the package loads its migrations itself.
+- **Breaking:** `simple_cart_lists` gets `version`, `status`, `status_changed_at`, `reference`, `slot`; the unique index is `(owner, list, slot)`. Upgrade migration included.
+- **Breaking:** on login the guest list is kept as `merged` instead of being deleted.
+- `illuminate/database` and `illuminate/console` are required.
+- `ManagedList::add()` quantity defaults to the quantity rule.
+- The cache layer drops the cart key on a write.
+
 ## [2.3.0] - 2026-08-24
 
 ### Added
