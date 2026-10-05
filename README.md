@@ -319,6 +319,10 @@ use TimurTurdyev\SimpleCart\Support\Price;
 $order = DB::transaction(function () {
     $number = Order::nextNumber();
     $snapshot = Cart::checkout(reference: $number);
+    $breakdown = $snapshot->totals()->breakdown();
+
+    return Order::create([
+        'number' => $number,
 
 ## Аналитика и брошенные корзины
 
