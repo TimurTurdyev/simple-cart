@@ -211,6 +211,11 @@ class Box extends Model implements Purchasable, HasQuantityRule
 'cart' => ['policy' => 'append', 'quantity' => ['min' => 1, 'step' => 1, 'max' => 99]],
 ```
 
+```php
+Cart::add($box);                    // 66
+Cart::add($box, quantity: 70);      // QuantityRuleException: min, step, max, given
+Cart::stepQuantity($line->id, -1);  // минус шаг, ниже min строка уходит
+
 ## Хранилище
 
 По умолчанию session: работает сразу после установки, пустые списки не оставляют записей. Переключение на базу - одна строка конфига:
