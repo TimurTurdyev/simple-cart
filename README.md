@@ -346,6 +346,10 @@ $order = DB::transaction(function () {
 ```php
 // routes/console.php
 Schedule::command('simple-cart:prune')->daily();
+```
+
+```php
+'prune' => [
 
 ## Переход с darryldecode/laravelshoppingcart
 
