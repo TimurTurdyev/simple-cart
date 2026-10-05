@@ -327,6 +327,9 @@ $order = DB::transaction(function () {
         'subtotal' => $breakdown['subtotal']->minor(),
         'adjustments' => array_map(fn (Price $amount): int => $amount->minor(), $breakdown['adjustments']),
         'total' => $breakdown['total']->minor(),
+    ]);
+});
+```
 
 ## Аналитика и брошенные корзины
 
