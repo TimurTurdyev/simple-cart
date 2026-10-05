@@ -272,6 +272,9 @@ Cart::forgetAttribute('draft');
 ```php
 use TimurTurdyev\SimpleCart\Storage\StorageManager;
 
+app(StorageManager::class)->extend('redis', fn () => new RedisCartStorage());
+```
+
 ## Идентичность корзины
 
 За владельца корзины отвечает слой `CartIdentity`. По умолчанию сессия. Нужна гостевая корзина дольше сессии - ставьте cookie-драйвер:
