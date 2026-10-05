@@ -341,6 +341,12 @@ $order = DB::transaction(function () {
 
 Брошенные корзины админка находит SQL-запросом по `updated_at`. Внутрь payload пускают json-функции БД и модель `TimurTurdyev\SimpleCart\Storage\CartRecord`. Цены в минорных единицах, курсов валют тут нет.
 
+## Чистка
+
+```php
+// routes/console.php
+Schedule::command('simple-cart:prune')->daily();
+
 ## Переход с darryldecode/laravelshoppingcart
 
 Таблица соответствия API и рецепт переноса данных - в [UPGRADE.md](UPGRADE.md). Встроенного импорта нет: старые корзины переносит одноразовый скрипт приложения через `forOwner($ownerId)->write(...)`, id владельцев не меняются, живые cookie продолжают находить свои корзины.
