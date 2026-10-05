@@ -17,6 +17,10 @@ CART_IDENTITY=session
 
 Other changes:
 
+- `add()` quantity is `?int`; null means the rule minimum, or 1.
+- On login the guest list is kept with `status = merged`. Count only `CartRecord::query()->active()`.
+- After an order call `Cart::checkout($number)` instead of `clear()`.
+
 ## From 1.0 to 2.0
 
 - The package is renamed: require `timurturdyev/simple-cart` instead of `timurturdyev/laravel-cart` and change the namespace prefix `TimurTurdyev\Cart` to `TimurTurdyev\SimpleCart` in your imports.
