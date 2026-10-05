@@ -4,6 +4,9 @@
 
 ```bash
 php artisan migrate
+```
+
+The upgrade migration adds `version`, `status`, `status_changed_at`, `reference`, `slot` and changes the unique index to `(owner, list, slot)`. Old rows stay active. Try it on a copy of the database first.
 
 ## From 1.0 to 2.0
 
