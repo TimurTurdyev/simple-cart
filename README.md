@@ -279,19 +279,26 @@ app(StorageManager::class)->extend('redis', fn () => new RedisCartStorage());
 
 ## Идентичность корзины
 
-За владельца корзины отвечает слой `CartIdentity`. По умолчанию сессия. Нужна гостевая корзина дольше сессии - ставьте cookie-драйвер:
+За владельца корзины отвечает слой `CartIdentity`, по умолчанию cookie:
 
 ```php
 'identity' => [
-    'driver' => 'cookie',
+    'driver' => env('CART_IDENTITY', 'cookie'),   // или 'session'
     'cookie' => [
         'name' => env('SIMPLE_CART_COOKIE', 'simple_cart_id'),
         'ttl_minutes' => 60 * 24 * 30,
+        'pattern' => '/^[0-9a-f]{32}$/',
     ],
 ],
 ```
 
 Cookie ставится лениво, при первой реальной записи: гость с пустой корзиной cookie не получит. Залогиненного пользователя определяет auth id. Шифрование - штатный `EncryptCookies` приложения.
+
+Старые id, например `uniqid('cart', true)`:
+
+```php
+'pattern' => '/^([0-9a-f]{32}|cart[0-9a-f]{13}\d\.\d{8})$/',
+```
 
 Свой вариант подключается через `IdentityManager::extend()`, как у хранилища.
 
