@@ -3,6 +3,16 @@
 All notable changes to this package are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.1.0] - 2026-10-05
+
+### Added
+
+- `identity.auth.guard`: the guard whose users own carts (null - the default guard). Users of other guards shop as guests, and the guest cart is merged only on login through this guard.
+- `identity.auth.prefix`: prepended to the auth id in `owner`, e.g. `customer:` keeps customer 5 apart from manager 5.
+- `IdentityManager::ownerFor($user)` returns the owner id of a user, `authOwner()` the owner of the current user; `CartRecord::owner()` scope.
+
+Empty settings keep the 3.0 behaviour.
+
 ## [3.0.0] - 2026-10-05
 
 ### Added
