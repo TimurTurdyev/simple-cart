@@ -8,6 +8,11 @@ php artisan migrate
 
 The upgrade migration adds `version`, `status`, `status_changed_at`, `reference`, `slot` and changes the unique index to `(owner, list, slot)`. Old rows stay active. Try it on a copy of the database first.
 
+Defaults are `storage = database` and `identity.driver = cookie`. Old behaviour:
+
+```dotenv
+CART_STORAGE=session
+
 ## From 1.0 to 2.0
 
 - The package is renamed: require `timurturdyev/simple-cart` instead of `timurturdyev/laravel-cart` and change the namespace prefix `TimurTurdyev\Cart` to `TimurTurdyev\SimpleCart` in your imports.
