@@ -46,6 +46,16 @@ final class CookieIdentity implements CartIdentity
         $this->cookies->queue($this->name, $this->id(), $this->ttlMinutes);
     }
 
+    /**
+     * Queues the cookie unless the request already carries a valid one.
+     */
+    public function issue(): void
+    {
+        if ($this->readCookie() === null) {
+            $this->persist();
+        }
+    }
+
     private function readCookie(): ?string
     {
         $value = ($this->cookieValue)();

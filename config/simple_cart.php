@@ -12,8 +12,10 @@ return [
     // How the current visitor's cart id is resolved: cookie (default), session
     // or a custom driver registered via IdentityManager::extend().
     // The cookie driver queues the cookie lazily - only when the visitor
-    // actually writes to a list for the first time. Cookie encryption is up to
-    // the application middleware (EncryptCookies).
+    // actually writes to a list for the first time; add
+    // Http\Middleware\IssueCartCookie to the web group to issue it with the
+    // first page. Cookie encryption is up to the application middleware
+    // (EncryptCookies).
     'identity' => [
         'driver' => env('CART_IDENTITY', 'cookie'),
         'cookie' => [
