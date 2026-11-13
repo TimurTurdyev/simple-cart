@@ -3,6 +3,13 @@
 All notable changes to this package are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.2.0] - 2026-11-13
+
+### Added
+
+- `Http\Middleware\IssueCartCookie` issues the cart cookie on the first GET instead of the first write. A visitor who adds an item and leaves the page at once may abort the response that carries a lazy cookie, and the cart is lost. Only the cookie driver; a missing, empty or rejected cookie is replaced, a valid one is left alone. `CookieIdentity::issue()` does the same by hand.
+- `ManagedList::setMeta($id, $values)` merges values into the meta of a line in place: one write under the optimistic version, the same id, quantity, price and position, event `LineMetaUpdated` with the changed keys. A line removed in another tab is not brought back. `Line::withMeta()`, `Cart::setMeta()`.
+
 ## [3.1.0] - 2026-05-30
 
 ### Added

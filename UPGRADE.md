@@ -1,5 +1,17 @@
 # Upgrade Guide
 
+## From 3.1 to 3.2
+
+Nothing to change. With the cookie identity, issue the cookie on the first page:
+
+```php
+->withMiddleware(function (Middleware $middleware): void {
+    $middleware->web(append: [\TimurTurdyev\SimpleCart\Http\Middleware\IssueCartCookie::class]);
+})
+```
+
+Code that changes line meta through `remove()` + `add()` can switch to `setMeta($id, $values)`: one write, no `LineRemoved` / `LineAdded`, the line keeps its position and price mark.
+
 ## From 3.0 to 3.1
 
 Nothing to change. To keep carts of a separate customer guard apart:
