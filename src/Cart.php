@@ -52,6 +52,11 @@ final readonly class Cart
         return $this->withList($this->list->acknowledgePrices());
     }
 
+    public function setMeta(string $id, array $values): self
+    {
+        return $this->withList($this->list->setMeta($id, $values));
+    }
+
     public function remove(string $id): self
     {
         return $this->withList($this->list->remove($id));

@@ -13,6 +13,7 @@ use TimurTurdyev\SimpleCart\Contracts\Storage;
 use TimurTurdyev\SimpleCart\Contracts\SupportsAtomicUpdate;
 use TimurTurdyev\SimpleCart\Contracts\SupportsLifecycle;
 use TimurTurdyev\SimpleCart\Events\LineAdded;
+use TimurTurdyev\SimpleCart\Events\LineMetaUpdated;
 use TimurTurdyev\SimpleCart\Events\LineRemoved;
 use TimurTurdyev\SimpleCart\Events\LineRepriced;
 use TimurTurdyev\SimpleCart\Events\LineUpdated;
@@ -162,6 +163,30 @@ final class ManagedList
     }
 
     /**
+     * Merges the values into the meta of a line in place: the id, quantity,
+     * price and position stay, one write and a LineMetaUpdated event.
+     */
+    public function setMeta(string $id, array $values): Line
+    {
+        $changed = [];
+
+        $state = $this->apply(function (Cart $cart) use ($id, $values, &$changed): Cart {
+            $line = $cart->get($id) ?? throw UnknownLineException::forId($id);
+            $changed = self::changedKeys($line->meta, $values);
+
+            return $cart->setMeta($id, $values);
+        });
+
+        $line = $state->get($id);
+
+        if ($changed !== []) {
+            $this->dispatch(new LineMetaUpdated($this->name, $line, $changed));
+        }
+
+        return $line;
+    }
+
+    /**
      * Clears the "price changed" marks once the customer has seen them.
      */
     public function acknowledgePrices(): void
@@ -294,11 +319,7 @@ final class ManagedList
         $changed = [];
 
         $this->apply(function (Cart $cart) use ($values, &$changed): Cart {
-            $changed = array_keys(array_filter(
-                $values,
-                fn (mixed $value, string|int $key): bool => ! array_key_exists($key, $cart->attributes) || $cart->attributes[$key] !== $value,
-                ARRAY_FILTER_USE_BOTH,
-            ));
+            $changed = self::changedKeys($cart->attributes, $values);
 
             return $cart->withAttributes($values);
         });
@@ -514,6 +535,18 @@ final class ManagedList
     private function payload(Cart $state): array
     {
         return $state->isBlank() ? [] : $state->toArray();
+    }
+
+    /**
+     * @return list<string|int>
+     */
+    private static function changedKeys(array $current, array $values): array
+    {
+        return array_keys(array_filter(
+            $values,
+            fn (mixed $value, string|int $key): bool => ! array_key_exists($key, $current) || $current[$key] !== $value,
+            ARRAY_FILTER_USE_BOTH,
+        ));
     }
 
     /**

@@ -94,6 +94,13 @@ final readonly class ItemList
         return $line === null ? $this : $this->put($line->withPrice($price));
     }
 
+    public function setMeta(string $id, array $values): self
+    {
+        $line = $this->lines[$id] ?? null;
+
+        return $line === null ? $this : $this->put($line->withMeta(array_replace($line->meta, $values)));
+    }
+
     public function acknowledgePrices(): self
     {
         return new self($this->policy, array_map(fn (Line $line): Line => $line->acknowledgePrice(), $this->lines));

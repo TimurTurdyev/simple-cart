@@ -130,6 +130,26 @@ final readonly class Line
         );
     }
 
+    public function withMeta(array $meta): self
+    {
+        if ($meta === $this->meta) {
+            return $this;
+        }
+
+        return new self(
+            $this->id,
+            $this->purchasableId,
+            $this->purchasableType,
+            $this->name,
+            $this->price,
+            $this->quantity,
+            $this->options,
+            $meta,
+            $this->quantityRule,
+            $this->previousPrice,
+        );
+    }
+
     /**
      * Sets the current price and remembers the price the customer saw before
      * the first unacknowledged change; returning to that price clears the mark.
